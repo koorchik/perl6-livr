@@ -1,0 +1,8 @@
+{
+    "name" : "LIVR",
+    "version" : "0.1.0",
+    "description" : "Lightweight Perl validator supporting Language Independent Validation Rules Specification (LIVR)",
+    "author" : "koorchik",
+    "depends" : [ ],
+    "source-url" : "git://github.com/koorchik/perl6-livr.git"
+}
