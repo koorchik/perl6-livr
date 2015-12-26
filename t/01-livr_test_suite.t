@@ -1,3 +1,4 @@
+use Test;
 use LIVR;
 
 my $validator = LIVR::Validator.new( livr-rules => {
@@ -10,10 +11,5 @@ my $validated = $validator.validate({
     email => 'koorchik@gmail.com'
 });
 
-if $validated {
-    say 'SUCCESS';
-    say $validated;
-} else {
-    say 'ERRORS';
-    say $validator.errors;
-}
+ok !$validated, 'Should return false on failed validation';
+is $validator.errors<name>, 'REQUIRED', 'Name should be REQUIRED';
