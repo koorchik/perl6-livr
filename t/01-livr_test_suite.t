@@ -13,3 +13,5 @@ my $validated = $validator.validate({
 
 ok !$validated, 'Should return false on failed validation';
 is $validator.errors<name>, 'REQUIRED', 'Name should be REQUIRED';
+
+done-testing;
