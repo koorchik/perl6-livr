@@ -3,7 +3,7 @@ unit package LIVR::Rules::Numeric;
 # use Scalar::Util qw/looks_like_number/;
 
 our sub integer([], $builders) {
-    return sub ($value, $all-values, $ouput is rw) {
+    return sub ($value, $all-values, $output is rw) {
         return if !$value.defined || $value eq '';
         return 'FORMAT_ERROR' unless $value ~~ Cool;
 
@@ -12,9 +12,8 @@ our sub integer([], $builders) {
     };
 }
 
-
 our sub positive_integer([], $builders) {
-    return sub ($value, $all-values, $ouput is rw) {
+    return sub ($value, $all-values, $output is rw) {
         return if !$value.defined || $value eq '';
         return 'FORMAT_ERROR' unless $value ~~ Cool;
 
@@ -26,9 +25,8 @@ our sub positive_integer([], $builders) {
     };
 }
 
-
 our sub decimal([], $builders) {
-    return sub ($value, $all-values, $ouput is rw) {
+    return sub ($value, $all-values, $output is rw) {
         return if !$value.defined || $value eq '';
         return 'FORMAT_ERROR' unless $value ~~ Cool;
 
@@ -39,9 +37,8 @@ our sub decimal([], $builders) {
     };
 }
 
-
 our sub positive_decimal([], $builders) {
-    return sub ($value, $all-values, $ouput is rw) {
+    return sub ($value, $all-values, $output is rw) {
         return if !$value.defined || $value eq '';
         return 'FORMAT_ERROR' unless $value ~~ Cool;
 
@@ -54,9 +51,8 @@ our sub positive_decimal([], $builders) {
     };
 }
 
-
 our sub max_number([$max_number], $builders) {
-    return sub ($value, $all-values, $ouput is rw) {
+    return sub ($value, $all-values, $output is rw) {
         return if !$value.defined || $value eq '';
         return 'FORMAT_ERROR' unless $value ~~ Cool;
 
@@ -66,9 +62,8 @@ our sub max_number([$max_number], $builders) {
     };
 }
 
-
 our sub min_number([$min_number], $builders) {
-    return sub ($value, $all-values, $ouput is rw) {
+    return sub ($value, $all-values, $output is rw) {
         return if !$value.defined || $value eq '';
         return 'FORMAT_ERROR' unless $value ~~ Cool;
 
@@ -77,9 +72,8 @@ our sub min_number([$min_number], $builders) {
     };
 }
 
-
 our sub number_between([$min_number, $max_number], $builders) {
-    return sub ($value, $all-values, $ouput is rw) {
+    return sub ($value, $all-values, $output is rw) {
         return if !$value.defined || $value eq '';
         return 'FORMAT_ERROR' unless $value ~~ Cool;
 

@@ -22,6 +22,8 @@ class LIVR::Validator {
             die "RULE_BUILDER [$name] SHOULD BE A CODEREF" unless $builder ~~ Block;
             %!validator-builders{$name} = $builder;
         }
+
+        return self;
     }
 
     method prepare {
@@ -38,6 +40,8 @@ class LIVR::Validator {
         }
 
         $!is-prepared = True;
+
+        return self;
     }
 
     method validate($data) {
@@ -87,22 +91,18 @@ class LIVR::Validator {
     }
 
     method !parse-rule($rule) {
-        my ($name, $args);
-
         if $rule ~~ Hash {
-            ($name, $args) = $rule.kv;
-            $args = [$args] unless $args ~~ Array;
+            my ($name, $args) = $rule.kv;
+            my $args-array = $args ~~ Array ?? $args !! [$args] ;
+            return( $name, $args-array );
         } else {
-            $name = $rule;
-            $args = [];
+            return( $rule, [] );
         }
-
-        return( $name, $args );
     }
 
     method !build-validator($rule-name, $rule-args) {
         die "Rule [$rule-name] not registered\n" unless %!validator-builders{$rule-name};
-        return %!validator-builders{$rule-name}( $rule-args, self.livr-rules );
+        return %!validator-builders{$rule-name}( $rule-args, %!validator-builders );
     }
 
     method !auto-trim($data) {
