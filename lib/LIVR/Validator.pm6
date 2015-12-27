@@ -19,18 +19,16 @@ class LIVR::Validator {
 
     method register-rules(%rules) {
         for %rules.kv -> $name, $builder {
-            # croak "RULE_BUILDER [$rule_name] SHOULD BE A CODEREF" unless ref($rule_builder) eq 'CODE';
+            die "RULE_BUILDER [$name] SHOULD BE A CODEREF" unless $builder ~~ Block;
             %!validator-builders{$name} = $builder;
         }
     }
 
     method prepare {
         for %.livr-rules.kv -> $field, $field-rules {
-            # $field_rules = [$field_rules] if ref($field_rules) ne 'ARRAY';
-            my @field-rules = [ $field-rules ];
+            my @field-rules = $field-rules ~~ Array ?? @$field-rules !! [$field-rules];
 
             my @validators;
-
             for @field-rules -> $rule {
                 my ($rule-name, $rule-args) = self!parse-rule($rule);
                 @validators.push( self!build-validator($rule-name, $rule-args) );
@@ -103,7 +101,7 @@ class LIVR::Validator {
     }
 
     method !build-validator($rule-name, $rule-args) {
-        # die "Rule [$name] not registered\n" unless $self->{validator_builders}->{$name};
+        die "Rule [$rule-name] not registered\n" unless %!validator-builders{$rule-name};
         return %!validator-builders{$rule-name}( $rule-args, self.livr-rules );
     }
 

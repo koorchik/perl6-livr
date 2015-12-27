@@ -4,7 +4,7 @@
     "description" : "Lightweight Perl validator supporting Language Independent Validation Rules Specification (LIVR)",
     "author" : "koorchik",
     "depends" : [
-        "JSON::Tiny"
+        "JSON::Tiny", "Terminal::ANSIColor"
     ],
     "provides" : {
         "LIVR"            : "lib/LIVR.pm6"
