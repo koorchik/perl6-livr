@@ -1,14 +1,21 @@
 unit package LIVR::Rules::Common;
+use LIVR::Utils;
 
 our sub required([], $builders) {
     return sub ($value, $all-values, $output is rw) {
-        return 'REQUIRED' if !$value.defined || $value eq '';
+        return 'REQUIRED' if is-no-value($value);
     };
 }
 
 our sub not_empty([], $builders) {
     return sub ($value, $all-values, $output is rw) {
-        return "CANNOT_BE_EMPTY" if $value.defined && $value eq '';
+        if $value.defined {
+            return if $value ~~ Hash;
+            return if $value ~~ Array;
+            return "CANNOT_BE_EMPTY" if $value.defined && $value eq '';
+        }
+        
+        return;
     };
 }
 

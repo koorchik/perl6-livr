@@ -3,17 +3,35 @@ use lib 'lib';
 use Test;
 use LIVR;
 
-my $validator = LIVR::Validator.new( livr-rules => {
-    name   => ['required'],
-    email  => { 'required' => [] }
-});
+subtest 'POSITIVE: required' => {
+    my $validator = LIVR::Validator.new( livr-rules => {
+        name   => ['required'],
+        email  => { 'required' => [] }
+    });
 
-my $validated = $validator.validate({
-    name => '',
-    email => 'koorchik@gmail.com'
-});
+    my $validated = $validator.validate({
+        name      => 'koorchik',
+        email     => 'koorchik@gmail.com',
+        somefield => 'This field has not validation'
+    });
 
-ok !$validated, 'Should return false on failed validation';
-is $validator.errors<name>, 'REQUIRED', 'Name should be REQUIRED';
+    ok $validated, 'Should return true on success validation';
+    is-deeply $validated, {name => 'koorchik', email => 'koorchik@gmail.com'}, 'should return cleaned object';
+};
+
+subtest 'NEGATIVE: required' => {
+    my $validator = LIVR::Validator.new( livr-rules => {
+        name   => ['required'],
+        email  => { 'required' => [] }
+    });
+
+    my $validated = $validator.validate({
+        name  => ''
+    });
+
+    ok !$validated, 'Should return false on failed validation';
+    is $validator.errors<name>, 'REQUIRED', '"name" should has error REQUIRED';
+    is $validator.errors<email>, 'REQUIRED', '"email" should has error REQUIRED';
+};
 
 done-testing;

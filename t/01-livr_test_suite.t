@@ -6,26 +6,30 @@ use Terminal::ANSIColor;
 
 use LIVR;
 
-iterate-test-data('test_suite/positive', sub (%data) {
+# iterate-test-data('test_suite/positive', sub (%data) {
+#     my $validator = LIVR::Validator.new( livr-rules => %data<rules> );
+#     my $output = $validator.validate( %data<input> );
+
+#     ok(! $validator.errors, 'Validator should contain no errors' ) or diag $validator.errors;
+#     is-deeply( $output, %data<output>, 'Validator should return validated data' ) 
+#         or diag %data;
+# });
+
+
+iterate-test-data('test_suite/negative', sub (%data) {
+    return if %data<testname>.match('08-like');
+
     my $validator = LIVR::Validator.new( livr-rules => %data<rules> );
     my $output = $validator.validate( %data<input> );
 
-    ok(! $validator.errors, 'Validator should contain no errors' ) or diag $validator.errors;
-    is-deeply( $output, %data<output>, 'Validator should return validated data' );
+    ok(!$output, 'Validator should return false');
+
+    is-deeply( $validator.errors, %data<errors>, 'Validator should contain valid errors' )
+        or die { got_errors => $validator.errors(), test_data => %data }.gist;
 });
 
-#
-# iterate-test-data('test_suite/negative', sub (%data) {
-#     my $validator = LIVR::Validator.new( livr-rules => %data<rules> );
-#     my $output = $validator.validate( %data<input> );
-#
-#     ok(!$output, 'Validator should return false');
-#
-#     is-deeply( $validator.errors, %data<errors>, 'Validator should contain valid errors' )
-#         or diag { got_errors => $validator.errors(), test_data => %data };
-# });
-#
-#
+
+
 # iterate-test-data('test_suite/aliases_positive', sub (%data) {
 #     my $validator = LIVR::Validator.new( livr-rules => %data<rules> );
 #     for %data<aliases> { $validator.register-aliased-rule($_) };
@@ -63,7 +67,7 @@ sub iterate-test-data($dir-basename, $cb) {
 
             # Prepare key
             my $testfile-rel = $testfile.subst($testdir, '');
-            my @parts = split( '/', $testfile-rel).grep( *.chars );
+            my @parts = split( /\/|\\/, $testfile-rel).grep( *.chars );
             my $key = @parts.pop.subst('.json', '');
 
             # Go deep and set content
