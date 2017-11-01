@@ -13,7 +13,7 @@ our sub nested_object([$livr-rules], %builders) {
 
         my $result = $validator.validate( $nested-object );
 
-        if ( $result.defined ) {
+        if $result.defined {
             $output = $result;
             return;
         } else {
@@ -22,147 +22,121 @@ our sub nested_object([$livr-rules], %builders) {
     }
 }
 
+our sub list_of(@args is copy, $builders) {
+    my @rules;
+    if (@args[0] ~~ Array) {
+        @rules = |@args[0];
+    } else {
+        @rules = @args;
+    }
 
-# sub nested_object {
-#     my ($livr, $rule_builders) = @_;
+    my $validator = LIVR::Validator.new(livr-rules => { field => @rules })
+        .register-rules($builders)
+        .prepare();
 
-#     my $validator = Validator::LIVR->new($livr)->register_rules(%$rule_builders)->prepare();
+    return sub ($values, $all-values, $output is rw) {
+        return if is-no-value($values);
+        return 'FORMAT_ERROR' unless $values ~~ Array;
 
-#     return sub {
-#         my ( $nested_object, $params, $output_ref ) = @_;
-#         return if !defined($nested_object) || $nested_object eq '';
+        my ( @results, @errors );
 
-#         return 'FORMAT_ERROR' unless ref($nested_object) eq 'HASH';
+        for @$values -> $value {
+            my $result = $validator.validate({field => $value});
+            
 
-#         my $result = $validator->validate( $nested_object );
+            if $result.defined {
+                @results.push( $result<field> );
+                @errors.push(Any);
+            } else {
+                 @errors.push( $validator.errors()<field> );
+                 @results.push(Any);
+            }
+        }
 
-#         if ( $result ) {
-#             $$output_ref = $result;
-#             return;
-#         } else {
-#             return $validator->get_errors();
-#         }
-#     }
-# }
+        if @errors.elems {
+            return @errors;
+        } else {
+            $output = @results;
+            return;
+        }
+    }
+}
 
+our sub list_of_objects([$livr-rules], $builders) {
+    my $validator = LIVR::Validator.new(livr-rules => $livr-rules)
+        .register-rules($builders)
+        .prepare();
 
-# sub list_of {
-#     my ( $rules, $rule_builders );
+    return sub ($objects, $all-values, $output is rw) {
+        return if is-no-value($objects);
+        return 'FORMAT_ERROR' unless $objects ~~ Array;
 
-#     if (ref $_[0] eq 'ARRAY') {
-#         ( $rules, $rule_builders ) = @_;
-#     } else {
-#         $rules = [@_];
-#         $rule_builders = pop @$rules;
-#     }
+        my ( @results, @errors );
 
-#     my $livr =  { field => $rules };
+        for @$objects -> $object {
+            my $result = $validator.validate($object);
+            
+            if $result.defined {
+                @results.push( $result );
+                @errors.push(Any);
+            } else {
+                 @errors.push( $validator.errors() );
+                 @results.push(Any);
+            }
+        }
 
-#     my $validator = Validator::LIVR->new($livr)->register_rules(%$rule_builders)->prepare();
+        if @errors.elems {
+            return @errors;
+        } else {
+            $output = @results;
+            return;
+        }
+    }
+}
 
-#     return sub {
-#         my ( $values, $params, $output_ref ) = @_;
-#         return if !defined($values) || $values eq '';
+our sub list_of_different_objects([$selector-field, $livrs], $builders) {
+    my %validators;
+    
+    for %$livrs.kv -> $selector-value, $livr-rules {
+        my $validator = LIVR::Validator.new(livr-rules => $livr-rules)
+            .register-rules($builders)
+            .prepare();
 
-#         return 'FORMAT_ERROR' unless ref($values) eq 'ARRAY';
+        %validators{$selector-value} = $validator;
+    }
 
-#         my ( @results, @errors );
+    return sub ($objects, $all-values, $output is rw) {
+        return if is-no-value($objects);
+        return 'FORMAT_ERROR' unless $objects ~~ Array;
 
-#         foreach my $val (@$values) {
-#             if ( my $result = $validator->validate( {field => $val} ) ) {
-#                 push @results, $result->{field};
-#                 push @errors, undef;
-#             } else {
-#                 push @errors, $validator->get_errors()->{field};
-#                 push @results, undef;
-#             }
-#         }
+        my ( @results, @errors );
 
-#         if ( grep {$_} @errors ) {
-#             return \@errors;
-#         } else {
-#             $$output_ref = \@results;
-#             return;
-#         }
-#     }
-# }
+        for @$objects -> $object {
+            if $object !~~ Hash || !$object{$selector-field} || !%validators{ $object{$selector-field} } {
+                @errors.push('FORMAT_ERROR');
+                next;
+            }
 
+            my $validator = %validators{ $object{$selector-field} };
+            my $result = $validator.validate($object);
+            
+            if $result.defined {
+                @results.push( $result );
+                @errors.push(Any);
+            } else {
+                 @errors.push( $validator.errors() );
+                 @results.push(Any);
+            }
+        }
 
-# sub list_of_objects {
-#     my ($livr, $rule_builders) = @_;
-
-#     my $validator = Validator::LIVR->new($livr)->register_rules(%$rule_builders)->prepare();
-
-#     return sub {
-#         my ( $objects, $params, $output_ref ) = @_;
-#         return if !defined($objects) || $objects eq '';
-
-#         return 'FORMAT_ERROR' unless ref($objects) eq 'ARRAY';
-
-#         my ( @results, @errors );
-
-#         foreach my $obj (@$objects) {
-#             if ( my $result = $validator->validate($obj) ) {
-#                 push @results, $result;
-#                 push @errors, undef;
-#             } else {
-#                 push @errors, $validator->get_errors();
-#                 push @results, undef;
-#             }
-#         }
-
-#         if ( grep {$_} @errors ) {
-#             return \@errors;
-#         } else {
-#             $$output_ref = \@results;
-#             return;
-#         }
-#     }
-# }
-
-# sub list_of_different_objects {
-#     my ( $selector_field, $livrs, $rule_builders ) = @_;
-
-#     my %validators;
-#     foreach my $selector_value ( keys %$livrs ) {
-#         my $validator = Validator::LIVR->new( $livrs->{$selector_value} )->register_rules(%$rule_builders)->prepare();
-
-#         $validators{$selector_value} = $validator;
-#     }
-
-
-#     return sub {
-#         my ( $objects, $params, $output_ref ) = @_;
-#         return if !defined($objects) || $objects eq '';
-
-#         return 'FORMAT_ERROR' unless ref($objects) eq 'ARRAY';
-
-#         my ( @results, @errors );
-
-#         foreach my $obj (@$objects) {
-#             if ( ref($obj) ne 'HASH' || !$obj->{$selector_field} || !$validators{$obj->{$selector_field}} ) {
-#                 push @errors, 'FORMAT_ERROR';
-#                 next;
-#             }
-
-#             my $validator = $validators{ $obj->{$selector_field} };
-
-#             if ( my $result = $validator->validate($obj) ) {
-#                 push @results, $result;
-#                 push @errors, undef;
-#             } else {
-#                 push @errors, $validator->get_errors();
-#             }
-#         }
-
-#         if ( grep {$_} @errors ) {
-#             return \@errors;
-#         } else {
-#             $$output_ref = \@results;
-#             return;
-#         }
-#     }
-# }
+        if @errors.elems {
+            return @errors;
+        } else {
+            $output = @results;
+            return;
+        }
+    }
+}
 
 
 

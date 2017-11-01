@@ -13,7 +13,7 @@ our sub email([], $builders) {
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
         return 'WRONG_EMAIL' unless $email-validator.validate($value);
-        return 'WRONG_EMAIL' if $email-validator.parse($value)<email><domain> ~~ /_/;
+        return 'WRONG_EMAIL' if $email-validator.parse($value)<email><domain> ~~ /_/; # issue in Email::Valid
         return;
     };
 }
@@ -28,16 +28,31 @@ our sub equal_to_field([$field], $builders) {
     };
 }
 
+our sub url([], $builders) {
+    return sub ($value, $all-values, $output is rw) {
+        return if is-no-value($value);
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
-# sub url {
-#     return sub {
-#         my $value = shift;
-#         return if !defined($value) || $value eq '';
-#         return 'FORMAT_ERROR' if ref($value);
-#
-#         $value =~ s/#[^#]*$//;
-#
-#         return 'WRONG_URL' unless lc($value) =~ /^$RE{URI}{HTTP}{-scheme => 'https?'}$/;
+        # $value .=subst(/#[^#]*$/, '');
+
+        # return 'WRONG_URL' unless lc($value) =~ /^$RE{URI}{HTTP}{-scheme => 'https?'}$/;
+        return;
+    };
+}
+
+# our sub email([], $builders) {
+#     return sub ($value, $all-values, $output is rw) {
+#         return if is-no-value($value);
+#         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+
+#         my $iso_date_re = qr#^
+#             (?<year>\d{4})-
+#             (?<month>[0-1][0-9])-
+#             (?<day>[0-3][0-9])
+#         $#x;
+
+#         return 'WRONG_EMAIL' unless $email-validator.validate($value);
+#         return 'WRONG_EMAIL' if $email-validator.parse($value)<email><domain> ~~ /_/; # issue in Email::Valid
 #         return;
 #     };
 # }

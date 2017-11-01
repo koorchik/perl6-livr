@@ -28,9 +28,13 @@ my %DEFAULT_RULES = (
     like             => &LIVR::Rules::String::like,
 
     email            => &LIVR::Rules::Special::email,
+    url              => &LIVR::Rules::Special::url,
     equal_to_field   => &LIVR::Rules::Special::equal_to_field,
 
     nested_object    => &LIVR::Rules::Meta::nested_object,
+    list_of          => &LIVR::Rules::Meta::list_of,
+    list_of_objects  => &LIVR::Rules::Meta::list_of_objects,
+    list_of_different_objects  => &LIVR::Rules::Meta::list_of_different_objects,
 );
 
 LIVR::Validator.register-default-rules(%DEFAULT_RULES);

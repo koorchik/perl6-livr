@@ -71,19 +71,19 @@ class LIVR::Validator {
                     $field-result
                 );
 
-                if ( $error-code ) {
+                if $error-code {
                     %errors{$field-name} = $error-code;
                     $is-ok = False;
                     last;
-                } elsif (  $field-result.defined ) {
+                } elsif $field-result.defined {
                     %result{$field-name} = $field-result;
-                } elsif ( $data{$field-name}:exists && ! (%result{$field-name}:exists) ) {
+                } elsif $data{$field-name}:exists && ! (%result{$field-name}:exists) {
                     %result{$field-name} = $field-result;
                 }
             }
         }
 
-        if ( %errors.elems ) {
+        if %errors.elems {
             $!errors = %errors;
             return;
         } else {
