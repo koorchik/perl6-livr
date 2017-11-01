@@ -11,7 +11,7 @@ our sub one_of(@args is copy, $builders) {
 
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value ~~ Hash || $value ~~ Array;
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
         for @allowed-values -> $allowed-value {
             if $value eq $allowed-value {
@@ -28,7 +28,7 @@ our sub one_of(@args is copy, $builders) {
 our sub max_length([$max-length], $builders) {
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value ~~ Hash || $value ~~ Array;
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
         return 'TOO_LONG' if $value.chars > $max-length;
         
@@ -40,7 +40,7 @@ our sub max_length([$max-length], $builders) {
 our sub min_length([$min-length], $builders) {
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value ~~ Hash || $value ~~ Array;
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
         return 'TOO_SHORT' if $value.chars < $min-length;
         
@@ -52,7 +52,7 @@ our sub min_length([$min-length], $builders) {
 our sub length_equal([$length], $builders) {
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value ~~ Hash || $value ~~ Array;
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
         return 'TOO_SHORT' if $value.chars < $length;
         return 'TOO_LONG'  if $value.chars > $length;
@@ -65,7 +65,7 @@ our sub length_equal([$length], $builders) {
 our sub length_between([$min-length, $max-length], $builders) {
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value ~~ Hash || $value ~~ Array;
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
         return 'TOO_SHORT' if $value.chars < $min-length;
         return 'TOO_LONG'  if $value.chars > $max-length;
@@ -81,7 +81,7 @@ our sub like([$re, $flags = ''], $builders) {
 
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value ~~ Hash || $value ~~ Array;
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
         # return 'WRONG_FORMAT' unless $value ~~ m/$flagged-re/;
         

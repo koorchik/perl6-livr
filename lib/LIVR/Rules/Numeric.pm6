@@ -1,14 +1,12 @@
 unit package LIVR::Rules::Numeric;
 use LIVR::Utils;
 
-# use Scalar::Util qw/looks_like_number/;
-
 our sub integer([], $builders) {
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value ~~ Hash || $value ~~ Array;
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
-        # return 'NOT_INTEGER' unless $value =~ /^\-?\d+$/ && looks_like_number($value);
+        return 'NOT_INTEGER' unless looks-like-number($value) && $value.Int eq $value;
         $output = $value.Int;
         return;
     };
@@ -17,12 +15,11 @@ our sub integer([], $builders) {
 our sub positive_integer([], $builders) {
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value ~~ Hash || $value ~~ Array;
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
-
-        # return 'NOT_POSITIVE_INTEGER' unless $value =~ /^\d+$/
-        #                               && looks_like_number($value)
-        #                               && $value > 0;
+        return 'NOT_POSITIVE_INTEGER' unless looks-like-number($value)
+                                          && $value.Int eq $value
+                                          && $value > 0;
 
         $output = $value.Int;
         return;
@@ -32,12 +29,11 @@ our sub positive_integer([], $builders) {
 our sub decimal([], $builders) {
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value ~~ Hash || $value ~~ Array;
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
-        # return 'NOT_DECIMAL' unless $value =~ /^\-?[\d.]+$/
-        #                      && looks_like_number($value);
+        return 'NOT_DECIMAL' unless looks-like-number($value);
 
-        $output = $value.Rat;
+        $output = $value.Numeric;
         return;
     };
 }
@@ -45,51 +41,53 @@ our sub decimal([], $builders) {
 our sub positive_decimal([], $builders) {
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value ~~ Hash || $value ~~ Array;
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
 
-        # return 'NOT_POSITIVE_DECIMAL' unless $value =~ /^\-?[\d.]+$/
-        #                               && looks_like_number($value)
-        #                               && $value > 0;
-        $output = $value.Rat;
+        return 'NOT_POSITIVE_DECIMAL' unless looks-like-number($value)
+                                          && $value > 0;
+                                 
+        $output = $value.Numeric;
         return;
     };
 }
 
-our sub max_number([$max_number], $builders) {
+our sub max_number([$max-number], $builders) {
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value ~~ Hash || $value ~~ Array;
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+        return 'NOT_NUMBER' unless looks-like-number($value);
 
-        #
-        # return 'TOO_HIGH' if $value > $max_number;
+        return 'TOO_HIGH' if $value > $max-number;
 
-        $output = $value.Rat;
+        $output = $value.Numeric;
         return;
     };
 }
 
-our sub min_number([$min_number], $builders) {
+our sub min_number([$min-number], $builders) {
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value ~~ Hash || $value ~~ Array;
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+        return 'NOT_NUMBER' unless looks-like-number($value);
 
-        # return 'TOO_LOW' if $value < $min_number;
+        return 'TOO_LOW' if $value < $min-number;
         
-        $output = $value.Rat;
+        $output = $value.Numeric;
         return;
     };
 }
 
-our sub number_between([$min_number, $max_number], $builders) {
+our sub number_between([$min-number, $max-number], $builders) {
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value ~~ Hash || $value ~~ Array;
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+        return 'NOT_NUMBER' unless looks-like-number($value);
 
-        # return 'TOO_LOW' if $value < $min_number;
-        # return 'TOO_HIGH' if $value > $max_number;
+        return 'TOO_LOW' if $value < $min-number;
+        return 'TOO_HIGH' if $value > $max-number;
         
-        $output = $value.Rat;
+        $output = $value.Numeric;
         return;
     };
 }

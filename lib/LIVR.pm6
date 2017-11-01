@@ -5,7 +5,7 @@ use LIVR::Rules::Common;
 use LIVR::Rules::Numeric;
 use LIVR::Rules::String;
 use LIVR::Rules::Special;
-use LIVR::Rules::Helpers;
+use LIVR::Rules::Meta;
 
 my %DEFAULT_RULES = (
     required         => &LIVR::Rules::Common::required,
@@ -30,7 +30,7 @@ my %DEFAULT_RULES = (
     email            => &LIVR::Rules::Special::email,
     equal_to_field   => &LIVR::Rules::Special::equal_to_field,
 
-    nested_object    => &LIVR::Rules::Helpers::nested_object,
+    nested_object    => &LIVR::Rules::Meta::nested_object,
 );
 
 LIVR::Validator.register-default-rules(%DEFAULT_RULES);

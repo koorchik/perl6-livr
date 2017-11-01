@@ -75,7 +75,9 @@ class LIVR::Validator {
                     %errors{$field-name} = $error-code;
                     $is-ok = False;
                     last;
-                } elsif ( $data{$field-name}:exists ) {
+                } elsif (  $field-result.defined ) {
+                    %result{$field-name} = $field-result;
+                } elsif ( $data{$field-name}:exists && ! (%result{$field-name}:exists) ) {
                     %result{$field-name} = $field-result;
                 }
             }
@@ -89,6 +91,7 @@ class LIVR::Validator {
             return %result;
         }
     }
+
 
     method !parse-rule($rule) {
         if $rule ~~ Hash {

@@ -1,24 +1,27 @@
 unit package LIVR::Rules::Special;
-
-# use Email::Valid;
+use LIVR::Utils;
+use Email::Valid;
 # use Regexp::Common qw/URI/;
 # use Time::Piece;
 #
 
+my $email-validator = Email::Valid.new(:simple(True));
+
 our sub email([], $builders) {
     return sub ($value, $all-values, $output is rw) {
-        return if !$value.defined || $value eq '';
-        return 'FORMAT_ERROR' unless $value ~~ Cool;
+        return if is-no-value($value);
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
-#         return 'WRONG_EMAIL' unless Email::Valid->address($value);
+        return 'WRONG_EMAIL' unless $email-validator.validate($value);
+        return 'WRONG_EMAIL' if $email-validator.parse($value)<email><domain> ~~ /_/;
         return;
     };
 }
 
 our sub equal_to_field([$field], $builders) {
     return sub ($value, $all-values, $output is rw) {
-        return if !$value.defined || $value eq '';
-        return 'FORMAT_ERROR' unless $value ~~ Cool;
+        return if is-no-value($value);
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
         return 'FIELDS_NOT_EQUAL' unless $value eq $all-values{$field};
         return;
