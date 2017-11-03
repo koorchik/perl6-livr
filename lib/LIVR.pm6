@@ -5,12 +5,14 @@ use LIVR::Rules::Common;
 use LIVR::Rules::Numeric;
 use LIVR::Rules::String;
 use LIVR::Rules::Special;
+use LIVR::Rules::Modifiers;
 use LIVR::Rules::Meta;
 
 my %DEFAULT_RULES = (
     required         => &LIVR::Rules::Common::required,
     not_empty        => &LIVR::Rules::Common::not_empty,
     not_empty_list   => &LIVR::Rules::Common::not_empty_list,
+    any_object       => &LIVR::Rules::Common::any_object,
 
     integer          => &LIVR::Rules::Numeric::integer,
     positive_integer => &LIVR::Rules::Numeric::positive_integer,
@@ -26,12 +28,21 @@ my %DEFAULT_RULES = (
     length_between   => &LIVR::Rules::String::length_between,
     length_equal     => &LIVR::Rules::String::length_equal,
     like             => &LIVR::Rules::String::like,
+    string           => &LIVR::Rules::String::string,
+    eq               => &LIVR::Rules::String::equal,
 
     email            => &LIVR::Rules::Special::email,
     url              => &LIVR::Rules::Special::url,
     equal_to_field   => &LIVR::Rules::Special::equal_to_field,
 
+    trim             => &LIVR::Rules::Modifiers::trim,
+    to_lc            => &LIVR::Rules::Modifiers::to_lc,
+    to_uc            => &LIVR::Rules::Modifiers::to_uc,
+
+
     nested_object    => &LIVR::Rules::Meta::nested_object,
+    variable_object  => &LIVR::Rules::Meta::variable_object,
+    or               => &LIVR::Rules::Meta::livr_or,
     list_of          => &LIVR::Rules::Meta::list_of,
     list_of_objects  => &LIVR::Rules::Meta::list_of_objects,
     list_of_different_objects  => &LIVR::Rules::Meta::list_of_different_objects,

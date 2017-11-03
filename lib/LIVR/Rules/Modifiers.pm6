@@ -1,39 +1,36 @@
 unit package LIVR::Rules::Modifiers;
+use LIVR::Utils;
 
+our sub trim([], $builders) {
+    return sub ($value, $all-values, $output is rw) {
+        return if is-no-value($value);
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+        
+        $output = $value.trim;
+        return;
+    };
+}
 
+our sub to_lc([], $builders) {
+    return sub ($value, $all-values, $output is rw) {
+        return if is-no-value($value);
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+        
+        $output = $value.lc;
+        return;
+    };
+}
 
-# sub trim {
-#     return sub {
-#         my ( $value, undef, $output_ref ) = @_;
-#         return if !defined($value) || ref($value) || $value eq '';
+our sub to_uc([], $builders) {
+    return sub ($value, $all-values, $output is rw) {
+        return if is-no-value($value);
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+        
+        $output = $value.uc;
+        return;
+    };
+}
 
-#         $$output_ref = $value;
-#         $$output_ref =~ s/^\s*//;
-#         $$output_ref =~ s/\s*$//;
-
-#         return;
-#     };
-# }
-
-# sub to_lc {
-#     return sub {
-#         my ( $value, undef, $output_ref ) = @_;
-#         return if !defined($value) || ref($value) || $value eq '';
-
-#         $$output_ref = lc($value);
-#         return;
-#     };
-# }
-
-# sub to_uc {
-#     return sub {
-#         my ( $value, undef, $output_ref ) = @_;
-#         return if !defined($value) || ref($value) || $value eq '';
-
-#         $$output_ref = uc($value);
-#         return;
-#     };
-# }
 
 # sub remove {
 #     my $chars = shift;

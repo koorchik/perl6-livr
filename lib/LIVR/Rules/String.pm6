@@ -77,7 +77,14 @@ our sub length_between([$min-length, $max-length], $builders) {
 
 our sub like([$re, $flags = ''], $builders) {
     my $is-ignore-case = $flags.match('i');
-    my $flagged-re = $is-ignore-case ?? rx:i:P5/$re/ !! rx:P5/$re/;
+    
+    my $flagged-re = do {
+        my $m = $re;
+        $is-ignore-case ?? rx:i/( <$m> )/ !! rx/( <$m> )/;
+    };
+
+    dd $flagged-re;
+    # my $flagged-re = $is-ignore-case ?? m:i:P5/<$re>/ !! m:P5/<$re>/;
 
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
@@ -87,5 +94,30 @@ our sub like([$re, $flags = ''], $builders) {
         
         $output = $value.Str;
         return;
+    };
+}
+
+our sub string([], $builders) {
+    return sub ($value, $all-values, $output is rw) {
+        return if is-no-value($value);
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+        
+        $output = $value.Str;
+        return;
+    };
+}
+
+our sub equal([$allowed-value], $builders) {
+    return sub ($value, $all-values, $output is rw) {
+        return if is-no-value($value);
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+        
+
+        if $value eq $allowed-value {
+            $output = $allowed-value;
+            return;
+        }
+        
+        return 'NOT_ALLOWED_VALUE';
     };
 }

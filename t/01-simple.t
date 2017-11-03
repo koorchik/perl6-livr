@@ -5,8 +5,8 @@ use LIVR;
 
 subtest 'POSITIVE: required' => {
     my $validator = LIVR::Validator.new( livr-rules => {
-        name   => ['required'],
-        email  => { 'required' => [] }
+        name  => ['required'],
+        email => { 'required' => [] }
     });
 
     my $validated = $validator.validate({
@@ -20,13 +20,13 @@ subtest 'POSITIVE: required' => {
 };
 
 subtest 'NEGATIVE: required' => {
-    my $validator = LIVR::Validator.new( livr-rules => {
-        name   => ['required'],
-        email  => { 'required' => [] }
+    my $validator = LIVR::Validator.new(livr-rules => {
+        name  => ['required'],
+        email => { 'required' => [] }
     });
 
     my $validated = $validator.validate({
-        name  => ''
+        name => ''
     });
 
     ok !$validated, 'Should return false on failed validation';

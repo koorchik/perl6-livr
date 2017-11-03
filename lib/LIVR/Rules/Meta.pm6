@@ -53,7 +53,7 @@ our sub list_of(@args is copy, $builders) {
             }
         }
 
-        if @errors.elems {
+        if @errors.grep(!!*) {
             return @errors;
         } else {
             $output = @results;
@@ -85,7 +85,7 @@ our sub list_of_objects([$livr-rules], $builders) {
             }
         }
 
-        if @errors.elems {
+        if @errors.grep(!!*) {
             return @errors;
         } else {
             $output = @results;
@@ -129,7 +129,7 @@ our sub list_of_different_objects([$selector-field, $livrs], $builders) {
             }
         }
 
-        if @errors.elems {
+        if @errors.grep(!!*) {
             return @errors;
         } else {
             $output = @results;
@@ -138,66 +138,60 @@ our sub list_of_different_objects([$selector-field, $livrs], $builders) {
     }
 }
 
+our sub variable_object([$selector-field, $livrs], $builders) {
+    my %validators;
+    
+    for %$livrs.kv -> $selector-value, $livr-rules {
+        my $validator = LIVR::Validator.new(livr-rules => $livr-rules)
+            .register-rules($builders)
+            .prepare();
 
+        %validators{$selector-value} = $validator;
+    }
 
-# sub variable_object {
-#     my ( $selector_field, $livrs, $rule_builders ) = @_;
+    return sub ($object, $all-values, $output is rw) {
+        return if is-no-value($object);
 
-#     my %validators;
-#     foreach my $selector_value ( keys %$livrs ) {
-#         my $validator = Validator::LIVR->new( $livrs->{$selector_value} )->register_rules(%$rule_builders)->prepare();
+        if $object !~~ Hash || !$object{$selector-field} || !%validators{ $object{$selector-field} } {
+            return 'FORMAT_ERROR';
+        }
 
-#         $validators{$selector_value} = $validator;
-#     }
+        my $validator = %validators{ $object{$selector-field} };
+        my $result = $validator.validate( $object );
 
+        if $result.defined {
+            $output = $result;
+            return;
+        } else {
+            return $validator.errors;
+        }
+    }
+}
 
-#     return sub {
-#         my ( $object, $params, $output_ref ) = @_;
-#         return if !defined($object) || $object eq '';
+our sub livr_or(@rule-sets, %builders) {
+    dd @rule-sets;
+    my @validators = @rule-sets.map( -> $livr-rules {
+        LIVR::Validator.new(livr-rules => {field => $livr-rules})
+            .register-rules(%builders)
+            .prepare();
+    });
 
+    return sub ($value, $all-values, $output is rw) {
+        return if is-no-value($value);
 
-#         if ( ref($object) ne 'HASH' || !$object->{$selector_field} || !$validators{$object->{$selector_field}} ) {
-#             return 'FORMAT_ERROR';
-#         }
+        my $last-error;
 
-#         my $validator = $validators{ $object->{$selector_field} };
+        for @validators -> $validator {
+             my $result = $validator.validate({ field => $value });
+             if $result.defined {
+                 $output = $result<field>;
+                 return;
+             } else {
+                 $last-error = $validator.errors()<field>
+             }
+        }
 
-#         if ( my $result = $validator->validate($object) ) {
-#             $$output_ref = $result;
-#             return;
-#         } else {
-#             return $validator->get_errors();
-#         }
-#     }
-# }
-
-
-# sub livr_or { # we call it livr_or to avoid conflicts with the "or" operator
-#     my @rule_sets = @_;
-#     my $rule_builders = pop @rule_sets;
-
-#     my @validators = map {
-#         Validator::LIVR->new( { field => $_ } )->register_rules(%$rule_builders)->prepare()
-#     } @rule_sets;
-
-#     return sub {
-#         my ($value, undef, $output_ref) = @_;
-#         return if !defined($value) || $value eq '';
-
-#         my $last_error;
-
-#         for my $validator (@validators) {
-#             my $result = $validator->validate({ field => $value });
-
-#             if ($result) {
-#                 $$output_ref = $result->{field};
-#                 return;
-#             } else {
-#                 $last_error = $validator->get_errors()->{field};
-#             }
-#         }
-
-#         return $last_error if $last_error;
-#         return;
-#     }
-# }
+        return $last-error if $last-error;
+        return;
+    }
+}

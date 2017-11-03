@@ -6,22 +6,24 @@ use Terminal::ANSIColor;
 
 use LIVR;
 
-# iterate-test-data('test_suite/positive', sub (%data) {
-#     # return if %data<testname>.match('like');
-#     return if %data<testname>.match('url');
+iterate-test-data('test_suite/positive', sub (%data) {
+    return if %data<testname>.match('like');
+    return if %data<testname>.match('iso_date');
+    # return if %data<testname>.match('url');
 
-#     my $validator = LIVR::Validator.new( livr-rules => %data<rules> );
-#     my $output = $validator.validate( %data<input> );
+    my $validator = LIVR::Validator.new( livr-rules => %data<rules> );
+    my $output = $validator.validate( %data<input> );
 
-#     ok(! $validator.errors, 'Validator should contain no errors' ) or diag $validator.errors;
-#     is-deeply( $output, %data<output>, 'Validator should return validated data' ) 
-#         or die %data.gist;
-# });
+    ok(! $validator.errors, 'Validator should contain no errors' ) or diag $validator.errors;
+    is-deeply( $output, %data<output>, 'Validator should return validated data' ) 
+        or die { got_error => $validator.errors(), test_data => %data.gist }.gist;
+});
 
 
 iterate-test-data('test_suite/negative', sub (%data) {
-    # return if %data<testname>.match('like');
-    return if %data<testname>.match('url');
+    return if %data<testname>.match('like');
+    return if %data<testname>.match('iso_date');
+    # return if %data<testname>.match('url');
 
 
     my $validator = LIVR::Validator.new( livr-rules => %data<rules> );
