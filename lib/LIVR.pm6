@@ -33,12 +33,15 @@ my %DEFAULT_RULES = (
 
     email            => &LIVR::Rules::Special::email,
     url              => &LIVR::Rules::Special::url,
+    iso_date         => &LIVR::Rules::Special::iso_date,
     equal_to_field   => &LIVR::Rules::Special::equal_to_field,
 
     trim             => &LIVR::Rules::Modifiers::trim,
     to_lc            => &LIVR::Rules::Modifiers::to_lc,
     to_uc            => &LIVR::Rules::Modifiers::to_uc,
-
+    remove           => &LIVR::Rules::Modifiers::remove,
+    leave_only       => &LIVR::Rules::Modifiers::leave_only,
+    default          => &LIVR::Rules::Modifiers::default,
 
     nested_object    => &LIVR::Rules::Meta::nested_object,
     variable_object  => &LIVR::Rules::Meta::variable_object,

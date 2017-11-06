@@ -169,7 +169,6 @@ our sub variable_object([$selector-field, $livrs], $builders) {
 }
 
 our sub livr_or(@rule-sets, %builders) {
-    dd @rule-sets;
     my @validators = @rule-sets.map( -> $livr-rules {
         LIVR::Validator.new(livr-rules => {field => $livr-rules})
             .register-rules(%builders)

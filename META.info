@@ -1,10 +1,10 @@
 {
     "name" : "LIVR",
-    "version" : "0.1.0",
+    "version" : "0.2.0",
     "description" : "Lightweight Perl validator supporting Language Independent Validation Rules Specification (LIVR)",
     "author" : "koorchik",
     "depends" : [
-        "JSON::Tiny", "Terminal::ANSIColor"
+        "JSON::Tiny", "Terminal::ANSIColor", "Email::Valid"
     ],
     "provides" : {
         "LIVR"            : "lib/LIVR.pm6"

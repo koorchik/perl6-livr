@@ -3,8 +3,7 @@ use LIVR::Utils;
 
 our sub trim([], $builders) {
     return sub ($value, $all-values, $output is rw) {
-        return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+        return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
         
         $output = $value.trim;
         return;
@@ -13,8 +12,7 @@ our sub trim([], $builders) {
 
 our sub to_lc([], $builders) {
     return sub ($value, $all-values, $output is rw) {
-        return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+        return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
         
         $output = $value.lc;
         return;
@@ -23,55 +21,43 @@ our sub to_lc([], $builders) {
 
 our sub to_uc([], $builders) {
     return sub ($value, $all-values, $output is rw) {
-        return if is-no-value($value);
-        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+        return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
         
         $output = $value.uc;
         return;
     };
 }
 
+our sub remove([$chars], $builders) {
+    return sub ($value, $all-values, $output is rw) {
+        return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
+        
+        $output = $value.trans( $chars.Str => '', :delete );
+        return;
+    };
+}
 
-# sub remove {
-#     my $chars = shift;
-#     my $re = qr/[\Q$chars\E]/;
+our sub leave_only([$chars], $builders) {
+    return sub ($value, $all-values, $output is rw) {
+        return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
+        
+        my $chars-set = set($chars.comb);
+        $output= $value.comb.grep(-> $c { $chars-set{$c} }).join('');
 
-#     return sub {
-#         my ( $value, undef, $output_ref ) = @_;
-#         return if !defined($value) || ref($value) || $value eq '';
+        # Does not work. Bug in Perl6 https://github.com/rakudo/rakudo/issues/1227
+        # $output = $value.trans( $chars.Str => '',   :complement, :delete ); 
+        
+        return;
+    };
+}
 
-#         $value =~ s/$re//g;
-
-#         $$output_ref = $value;
-#         return;
-#     };
-# }
-
-# sub leave_only {
-#     my $chars = shift;
-#     my $re = qr/[^\Q$chars\E]/;
-
-#     return sub {
-#         my ( $value, undef, $output_ref ) = @_;
-#         return if !defined($value) || ref($value) || $value eq '';
-
-#         $value =~ s/$re//g;
-
-#         $$output_ref = $value;
-#         return;
-#     };
-# }
-
-# sub default {
-#     my $default_value = shift;
-
-#     return sub {
-#         my ( $value, undef, $output_ref ) = @_;
-
-#         if ( !defined($value) || $value eq '' ) {
-#             $$output_ref = $default_value;
-#         }
-
-#         return;
-#     };
-# }
+our sub default([$default-value], $builders) {
+    return sub ($value, $all-values, $output is rw) {
+        
+        if is-no-value($value) {
+            $output = $default-value;
+        }
+        
+        return;
+    };
+}

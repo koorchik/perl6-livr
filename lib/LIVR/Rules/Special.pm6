@@ -1,9 +1,6 @@
 unit package LIVR::Rules::Special;
 use LIVR::Utils;
 use Email::Valid;
-# use Regexp::Common qw/URI/;
-# use Time::Piece;
-#
 
 my $email-validator = Email::Valid.new(:simple(True));
 
@@ -12,8 +9,8 @@ our sub email([], $builders) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
-        return 'WRONG_EMAIL' unless $email-validator.validate($value);
-        return 'WRONG_EMAIL' if $email-validator.parse($value)<email><domain> ~~ /_/; # issue in Email::Valid
+        return 'WRONG_EMAIL' unless $email-validator.validate($value.Str);
+        return 'WRONG_EMAIL' if $email-validator.parse($value.Str)<email><domain> ~~ /_/; # issue in Email::Valid
         return;
     };
 }
@@ -40,23 +37,17 @@ our sub url([], $builders) {
     };
 }
 
-# our sub email([], $builders) {
-#     return sub ($value, $all-values, $output is rw) {
-#         return if is-no-value($value);
-#         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+our sub iso_date([], $builders) {
+    return sub ($value, $all-values, $output is rw) {
+        return if is-no-value($value);
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
-#         my $iso_date_re = qr#^
-#             (?<year>\d{4})-
-#             (?<month>[0-1][0-9])-
-#             (?<day>[0-3][0-9])
-#         $#x;
+        # $value .=subst(/#[^#]*$/, '');
 
-#         return 'WRONG_EMAIL' unless $email-validator.validate($value);
-#         return 'WRONG_EMAIL' if $email-validator.parse($value)<email><domain> ~~ /_/; # issue in Email::Valid
-#         return;
-#     };
-# }
-
+        # return 'WRONG_URL' unless lc($value) =~ /^$RE{URI}{HTTP}{-scheme => 'https?'}$/;
+        return;
+    };
+}
 
 # sub iso_date {
 #     return sub {
