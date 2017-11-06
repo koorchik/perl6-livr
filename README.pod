@@ -1,4 +1,4 @@
-=for HTML <a href="https://travis-ci.org/koorchik/Validator-LIVR"><img src="https://travis-ci.org/koorchik/Validator-LIVR.svg?branch=master"></a>
+=for HTML <a href="https://travis-ci.org/koorchik/perl6-livr"><img src="https://travis-ci.org/koorchik/perl6-livr.svg?branch=master"></a>
 
 =head1 NAME
 
