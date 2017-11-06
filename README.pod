@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-Validator::LIVR - Lightweight validator supporting Language Independent Validation Rules Specification (LIVR)
+LIVR::Validator - Lightweight Perl6 validator supporting Language Independent Validation Rules Specification (LIVR)
 
 =head1 SYNOPSIS
 
@@ -83,7 +83,7 @@ Validator::LIVR - Lightweight validator supporting Language Independent Validati
 
 =head1 DESCRIPTION
 
-L<Validator::LIVR> lightweight validator supporting Language Independent Validation Rules Specification (LIVR)
+L<LIVR::Validator> lightweight validator supporting Language Independent Validation Rules Specification (LIVR)
 
 See L<http://livr-spec.org> for rules documentation.
 
@@ -213,17 +213,17 @@ Just look at the existing rules implementation:
 
 =over 4
 
-=item * L<Validator::LIVR::Rules::Common>
+=item * L<LIVR::Validator::Rules::Common>
 
-=item * L<Validator::LIVR::Rules::String>;
+=item * L<LIVR::Validator::Rules::String>;
 
-=item * L<Validator::LIVR::Rules::Numeric>;
+=item * L<LIVR::Validator::Rules::Numeric>;
 
-=item * L<Validator::LIVR::Rules::Special>;
+=item * L<LIVR::Validator::Rules::Special>;
 
-=item * L<Validator::LIVR::Rules::Meta>;
+=item * L<LIVR::Validator::Rules::Meta>;
 
-=item * L<Validator::LIVR::Rules::Modifiers>;
+=item * L<LIVR::Validator::Rules::Modifiers>;
 
 =back
 
@@ -301,7 +301,7 @@ Please report any bugs or feature requests to Github L<https://github.com/koorch
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Validator::LIVR
+    perldoc LIVR::Validator
 
 
 You can also look for information at:
