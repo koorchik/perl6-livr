@@ -46,9 +46,9 @@ our sub url([], $builders) {
 
 our sub iso_date([], $builders) {
     my $iso-date-re = rx/^
-        (\d ** 4) \-
-        (<[0..1]><[0..9]>) \-
-        (<[0..3]><[0..9]>)
+        \d ** 4 \-               # year
+        <[0..1]><[0..9]> \-      # month
+        <[0..3]><[0..9]>         # day
     $/;
 
     return sub ($value, $all-values, $output is rw) {

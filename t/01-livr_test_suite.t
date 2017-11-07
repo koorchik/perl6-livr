@@ -31,28 +31,29 @@ iterate-test-data('test_suite/negative', sub (%data) {
 });
 
 
+iterate-test-data('test_suite/aliases_positive', sub (%data) {
+    my $validator = LIVR::Validator.new( livr-rules => %data<rules> );
 
-# iterate-test-data('test_suite/aliases_positive', sub (%data) {
-#     my $validator = LIVR::Validator.new( livr-rules => %data<rules> );
-#     for %data<aliases> { $validator.register-aliased-rule($_) };
-#     my $output = $validator.validate( %data<input> );
-#
-#     ok(! $validator.errors, 'Validator should contain no errors' ) or diag $validator.errors;
-#     is-deeply( $output, %data<output>, 'Validator should return validated data' );
-# });
-#
-#
-# iterate-test-data('test_suite/aliases_negative', sub (%data) {
-#     my $validator = LIVR::Validator.new( livr-rules => %data<rules> );
-#     for %data<aliases> { $validator.register-aliased-rule($_) };
-#     my $output = $validator.validate( %data<input> );
-#
-#
-#     ok(!$output, 'Validator should return false');
-#
-#     is-deeply( $validator.errors, %data<errors>, 'Validator should contain valid errors' )
-#         or diag { got_errors => $validator.errors(), test_data => %data };
-# });
+    for @(%data<aliases>) { $validator.register-aliased-rule($_) }
+
+    my $output = $validator.validate( %data<input> );
+
+    ok(! $validator.errors, 'Validator should contain no errors' ) or diag $validator.errors;
+    is-deeply( $output, %data<output>, 'Validator should return validated data' ) 
+        or die { got_error => $validator.errors(), test_data => %data.gist }.gist;
+});
+
+iterate-test-data('test_suite/aliases_negative', sub (%data) {
+    my $validator = LIVR::Validator.new( livr-rules => %data<rules> );
+    for @(%data<aliases>) { $validator.register-aliased-rule($_) };
+    my $output = $validator.validate( %data<input> );
+
+
+    ok(!$output, 'Validator should return false');
+
+    is-deeply( $validator.errors, %data<errors>, 'Validator should contain valid errors' )
+        or die { got_errors => $validator.errors(), test_data => %data }.gist;
+});
 
 done-testing;
 

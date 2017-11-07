@@ -26,6 +26,13 @@ class LIVR::Validator {
         return self;
     }
 
+    method register-aliased-rule($alias) {
+        die 'Alias name required' unless $alias<name>;
+        %!validator-builders{ $alias<name> } = self!build-aliased-rule(%$alias);
+        
+        return self;
+    }
+
     method prepare {
         for %.livr-rules.kv -> $field, $field-rules {
             my @field-rules = $field-rules ~~ Array ?? @$field-rules !! [$field-rules];
@@ -106,6 +113,30 @@ class LIVR::Validator {
     method !build-validator($rule-name, $rule-args) {
         die "Rule [$rule-name] not registered\n" unless %!validator-builders{$rule-name};
         return %!validator-builders{$rule-name}( $rule-args, %!validator-builders );
+    }
+
+    method !build-aliased-rule(%alias) {
+        die 'Alias name required'  unless %alias<name>;
+        die 'Alias rules required' unless %alias<rules>;
+
+        my $livr-rules = { value => %alias<rules> };
+
+        return sub ([], %builders) {
+            my $validator = LIVR::Validator.new(livr-rules => $livr-rules)
+                .register-rules(%builders)
+                .prepare();
+
+            return sub ($value, $all-values, $output is rw) {
+                my $result = $validator.validate( { value => $value } );
+
+                if ( $result.defined ) {
+                    $output = $result<value>;
+                    return;
+                } else {
+                    return %alias<error> || $validator.errors()<value>;
+                }
+            };
+        };
     }
 
     method !auto-trim($data) {

@@ -78,14 +78,14 @@ our sub length_between([$min-length, $max-length], $builders) {
 our sub like([$re, $flags = ''], $builders) {
     my $is-ignore-case = $flags.match('i');
     
-    my $flagged-re = do {
-        my $m = $re;
-        $is-ignore-case ?? rx:i/( <$m> )/ !! rx/( <$m> )/;
-    };
+    # my $flagged-re = do {
+    #     my $m = $re;
+    #     $is-ignore-case ?? rx:P5:i/( <$m> )/ !! rx:P5/( <$m> )/;
+    # };
 
+    # dd $flagged-re;
+    my $flagged-re = $is-ignore-case ?? rx:i:P5/$re/ !! rx:P5/$re/;
     dd $flagged-re;
-    # my $flagged-re = $is-ignore-case ?? m:i:P5/<$re>/ !! m:P5/<$re>/;
-
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
