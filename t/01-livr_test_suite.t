@@ -22,8 +22,6 @@ iterate-test-data('test_suite/positive', sub (%data) {
 iterate-test-data('test_suite/negative', sub (%data) {
     return if %data<testname>.match('like');
     return if %data<testname>.match('iso_date');
-    # return if %data<testname>.match('url');
-
 
     my $validator = LIVR::Validator.new( livr-rules => %data<rules> );
     my $output = $validator.validate( %data<input> );
