@@ -10,7 +10,9 @@ our sub email([], $builders) {
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
         return 'WRONG_EMAIL' unless $email-validator.validate($value.Str);
-        return 'WRONG_EMAIL' if $email-validator.parse($value.Str)<email><domain> ~~ /_/; # issue in Email::Valid
+
+        # issue in Email::Valid https://github.com/Demayl/perl6-Email-Valid/issues/6
+        return 'WRONG_EMAIL' if $email-validator.parse($value.Str)<email><domain> ~~ /_/; 
         return;
     };
 }
@@ -43,39 +45,26 @@ our sub url([], $builders) {
 }
 
 our sub iso_date([], $builders) {
+    my $iso-date-re = rx/^
+        (\d ** 4) \-
+        (<[0..1]><[0..9]>) \-
+        (<[0..3]><[0..9]>)
+    $/;
+
     return sub ($value, $all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+        
+        if $value ~~ $iso-date-re {
+            my Date $date = Date.new($value);
+       
+            return if $date eq $value;
 
-        # $value .=subst(/#[^#]*$/, '');
+            CATCH {
+                return 'WRONG_DATE';
+            }
+        }
 
-        # my $rx = rx/^(?:(?:http|https)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[0-1]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))\\.?|localhost)(?::\\d{2,5})?(?:[/?#]\\S*)?$/
-        # return 'WRONG_URL' unless lc($value) =~ /^$RE{URI}{HTTP}{-scheme => 'https?'}$/;
-        return;
+        return 'WRONG_DATE';
     };
 }
-
-# sub iso_date {
-#     return sub {
-#         my $value = shift;
-#         return if !defined($value) || $value eq '';
-#         return 'FORMAT_ERROR' if ref($value);
-#
-#         my $iso_date_re = qr#^
-#             (?<year>\d{4})-
-#             (?<month>[0-1][0-9])-
-#             (?<day>[0-3][0-9])
-#         $#x;
-#
-#         if ( $value =~ $iso_date_re ) {
-#             my $date = eval { Time::Piece->strptime($value, "%Y-%m-%d") };
-#             return "WRONG_DATE" if !$date || $@;
-#
-#             if ( $date->year == $+{year} && $date->mon == $+{month} && $date->mday == $+{day} ) {
-#                 return;
-#             }
-#         }
-#
-#         return "WRONG_DATE";
-#     };
-# }
