@@ -4,8 +4,8 @@ use Email::Valid;
 
 my $email-validator = Email::Valid.new(:simple(True));
 
-our sub email([], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub email([], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
@@ -17,21 +17,21 @@ our sub email([], $builders) {
     };
 }
 
-our sub equal_to_field([$field], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub equal_to_field([$field], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
-        return 'FIELDS_NOT_EQUAL' unless $value eq $all-values{$field};
+        return 'FIELDS_NOT_EQUAL' unless $value eq %all-values{$field};
         return;
     };
 }
 
-our sub url([], $builders) {
+our sub url([], %builders) {
     my $url-re = rx:P5`^(?:(?:https?)://(?:(?:(?:(?:(?:(?:[a-zA-Z0-9][-a-zA-Z0-9]*)?[a-zA-Z0-9])[.])*(?:[a-zA-Z][-a-zA-Z0-9]*[a-zA-Z0-9]|[a-zA-Z])[.]?)|(?:[0-9]+[.][0-9]+[.][0-9]+[.][0-9]+)))(?::(?:(?:[0-9]*)))?(?:/(?:(?:(?:(?:(?:(?:[a-zA-Z0-9\-_.!~*'():@&=+$,]+|(?:%[a-fA-F0-9][a-fA-F0-9]))*)(?:;(?:(?:[a-zA-Z0-9\-_.!~*'():@&=+$,]+|(?:%[a-fA-F0-9][a-fA-F0-9]))*))*)(?:/(?:(?:(?:[a-zA-Z0-9\-_.!~*'():@&=+$,]+|(?:%[a-fA-F0-9][a-fA-F0-9]))*)(?:;(?:(?:[a-zA-Z0-9\-_.!~*'():@&=+$,]+|(?:%[a-fA-F0-9][a-fA-F0-9]))*))*))*))(?:[?](?:(?:(?:[;/?:@&=+$,a-zA-Z0-9\-_.!~*'()]+|(?:%[a-fA-F0-9][a-fA-F0-9]))*)))?))?)$`;
     my $anchor-re = rx:P5/#[^#]*$/;
 
-    return sub ($value, $all-values, $output is rw) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
@@ -44,14 +44,14 @@ our sub url([], $builders) {
     };
 }
 
-our sub iso_date([], $builders) {
+our sub iso_date([], %builders) {
     my $iso-date-re = rx/^
         \d ** 4 \-               # year
         <[0..1]><[0..9]> \-      # month
         <[0..3]><[0..9]>         # day
     $/;
 
-    return sub ($value, $all-values, $output is rw) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
         

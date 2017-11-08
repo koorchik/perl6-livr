@@ -7,7 +7,7 @@ our sub nested_object([$livr-rules], %builders) {
         .register-rules(%builders)
         .prepare();
 
-    return sub ($nested-object, $all-values, $output is rw) {
+    return sub ($nested-object, %all-values, $output is rw) {
         return if is-no-value($nested-object);
         return 'FORMAT_ERROR' unless $nested-object ~~ Hash;
 
@@ -22,7 +22,7 @@ our sub nested_object([$livr-rules], %builders) {
     }
 }
 
-our sub list_of(@args is copy, $builders) {
+our sub list_of(@args is copy, %builders) {
     my @rules;
     if (@args[0] ~~ Array) {
         @rules = |@args[0];
@@ -31,10 +31,10 @@ our sub list_of(@args is copy, $builders) {
     }
 
     my $validator = LIVR::Validator.new(livr-rules => { field => @rules })
-        .register-rules($builders)
+        .register-rules(%builders)
         .prepare();
 
-    return sub ($values, $all-values, $output is rw) {
+    return sub ($values, %all-values, $output is rw) {
         return if is-no-value($values);
         return 'FORMAT_ERROR' unless $values ~~ Array;
 
@@ -62,12 +62,12 @@ our sub list_of(@args is copy, $builders) {
     }
 }
 
-our sub list_of_objects([$livr-rules], $builders) {
+our sub list_of_objects([$livr-rules], %builders) {
     my $validator = LIVR::Validator.new(livr-rules => $livr-rules)
-        .register-rules($builders)
+        .register-rules(%builders)
         .prepare();
 
-    return sub ($objects, $all-values, $output is rw) {
+    return sub ($objects, %all-values, $output is rw) {
         return if is-no-value($objects);
         return 'FORMAT_ERROR' unless $objects ~~ Array;
 
@@ -94,18 +94,18 @@ our sub list_of_objects([$livr-rules], $builders) {
     }
 }
 
-our sub list_of_different_objects([$selector-field, $livrs], $builders) {
+our sub list_of_different_objects([$selector-field, $livrs], %builders) {
     my %validators;
     
     for %$livrs.kv -> $selector-value, $livr-rules {
         my $validator = LIVR::Validator.new(livr-rules => $livr-rules)
-            .register-rules($builders)
+            .register-rules(%builders)
             .prepare();
 
         %validators{$selector-value} = $validator;
     }
 
-    return sub ($objects, $all-values, $output is rw) {
+    return sub ($objects, %all-values, $output is rw) {
         return if is-no-value($objects);
         return 'FORMAT_ERROR' unless $objects ~~ Array;
 
@@ -138,18 +138,18 @@ our sub list_of_different_objects([$selector-field, $livrs], $builders) {
     }
 }
 
-our sub variable_object([$selector-field, $livrs], $builders) {
+our sub variable_object([$selector-field, $livrs], %builders) {
     my %validators;
     
     for %$livrs.kv -> $selector-value, $livr-rules {
         my $validator = LIVR::Validator.new(livr-rules => $livr-rules)
-            .register-rules($builders)
+            .register-rules(%builders)
             .prepare();
 
         %validators{$selector-value} = $validator;
     }
 
-    return sub ($object, $all-values, $output is rw) {
+    return sub ($object, %all-values, $output is rw) {
         return if is-no-value($object);
 
         if $object !~~ Hash || !$object{$selector-field} || !%validators{ $object{$selector-field} } {
@@ -175,7 +175,7 @@ our sub livr_or(@rule-sets, %builders) {
             .prepare();
     });
 
-    return sub ($value, $all-values, $output is rw) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
 
         my $last-error;

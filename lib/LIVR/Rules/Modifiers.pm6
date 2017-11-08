@@ -1,8 +1,8 @@
 unit package LIVR::Rules::Modifiers;
 use LIVR::Utils;
 
-our sub trim([], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub trim([], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
         
         $output = $value.trim;
@@ -10,8 +10,8 @@ our sub trim([], $builders) {
     };
 }
 
-our sub to_lc([], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub to_lc([], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
         
         $output = $value.lc;
@@ -19,8 +19,8 @@ our sub to_lc([], $builders) {
     };
 }
 
-our sub to_uc([], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub to_uc([], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
         
         $output = $value.uc;
@@ -28,8 +28,8 @@ our sub to_uc([], $builders) {
     };
 }
 
-our sub remove([$chars], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub remove([$chars], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
         
         $output = $value.trans( $chars.Str => '', :delete );
@@ -37,8 +37,8 @@ our sub remove([$chars], $builders) {
     };
 }
 
-our sub leave_only([$chars], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub leave_only([$chars], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
         
         my $chars-set = set($chars.comb);
@@ -51,8 +51,8 @@ our sub leave_only([$chars], $builders) {
     };
 }
 
-our sub default([$default-value], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub default([$default-value], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         
         if is-no-value($value) {
             $output = $default-value;

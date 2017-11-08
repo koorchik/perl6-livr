@@ -1,7 +1,7 @@
 unit package LIVR::Rules::String;
 use LIVR::Utils;
 
-our sub one_of(@args is copy, $builders) {
+our sub one_of(@args is copy, %builders) {
     my @allowed-values;
     if (@args[0] ~~ Array) {
         @allowed-values = |@args[0];
@@ -9,7 +9,7 @@ our sub one_of(@args is copy, $builders) {
         @allowed-values = @args;
     }
 
-    return sub ($value, $all-values, $output is rw) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
@@ -25,8 +25,8 @@ our sub one_of(@args is copy, $builders) {
 }
 
 
-our sub max_length([$max-length], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub max_length([$max-length], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
@@ -37,8 +37,8 @@ our sub max_length([$max-length], $builders) {
     };
 }
 
-our sub min_length([$min-length], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub min_length([$min-length], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
@@ -49,8 +49,8 @@ our sub min_length([$min-length], $builders) {
     };
 }
 
-our sub length_equal([$length], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub length_equal([$length], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
@@ -62,8 +62,8 @@ our sub length_equal([$length], $builders) {
     };
 }
 
-our sub length_between([$min-length, $max-length], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub length_between([$min-length, $max-length], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
@@ -75,7 +75,7 @@ our sub length_between([$min-length, $max-length], $builders) {
     };
 }
 
-our sub like([$re, $flags = ''], $builders) {
+our sub like([$re, $flags = ''], %builders) {
     my $is-ignore-case = $flags.match('i');
     
     # my $flagged-re = do {
@@ -86,7 +86,7 @@ our sub like([$re, $flags = ''], $builders) {
     # dd $flagged-re;
     my $flagged-re = $is-ignore-case ?? rx:i:P5/$re/ !! rx:P5/$re/;
     dd $flagged-re;
-    return sub ($value, $all-values, $output is rw) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
@@ -97,8 +97,8 @@ our sub like([$re, $flags = ''], $builders) {
     };
 }
 
-our sub string([], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub string([], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
         
@@ -107,8 +107,8 @@ our sub string([], $builders) {
     };
 }
 
-our sub equal([$allowed-value], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub equal([$allowed-value], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
         

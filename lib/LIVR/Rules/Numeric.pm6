@@ -1,8 +1,8 @@
 unit package LIVR::Rules::Numeric;
 use LIVR::Utils;
 
-our sub integer([], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub integer([], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
@@ -12,8 +12,8 @@ our sub integer([], $builders) {
     };
 }
 
-our sub positive_integer([], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub positive_integer([], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
@@ -26,8 +26,8 @@ our sub positive_integer([], $builders) {
     };
 }
 
-our sub decimal([], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub decimal([], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
@@ -38,8 +38,8 @@ our sub decimal([], $builders) {
     };
 }
 
-our sub positive_decimal([], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub positive_decimal([], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
@@ -52,8 +52,8 @@ our sub positive_decimal([], $builders) {
     };
 }
 
-our sub max_number([$max-number], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub max_number([$max-number], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
         return 'NOT_NUMBER' unless looks-like-number($value);
@@ -65,8 +65,8 @@ our sub max_number([$max-number], $builders) {
     };
 }
 
-our sub min_number([$min-number], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub min_number([$min-number], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
         return 'NOT_NUMBER' unless looks-like-number($value);
@@ -78,8 +78,8 @@ our sub min_number([$min-number], $builders) {
     };
 }
 
-our sub number_between([$min-number, $max-number], $builders) {
-    return sub ($value, $all-values, $output is rw) {
+our sub number_between([$min-number, $max-number], %builders) {
+    return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
         return 'NOT_NUMBER' unless looks-like-number($value);

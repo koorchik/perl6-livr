@@ -1,5 +1,5 @@
 class LIVR::Validator {
-    has Bool $.is-auto-trim = False;
+    has $.is-auto-trim = False;
     has %.livr-rules;
     has $.errors is readonly;
 
@@ -13,7 +13,11 @@ class LIVR::Validator {
         %DEFAULT_RULES.push(%rules);
     }
 
-    submethod BUILD(:%!livr-rules) {
+    method get-default-rules() {
+        return %DEFAULT_RULES;
+    }
+
+    submethod BUILD(:%!livr-rules, :$!is-auto-trim) {
         self.register-rules(%DEFAULT_RULES);
     }
 
@@ -24,6 +28,10 @@ class LIVR::Validator {
         }
 
         return self;
+    }
+
+    method get-rules() {
+        %!validator-builders;
     }
 
     method register-aliased-rule($alias) {
@@ -51,7 +59,7 @@ class LIVR::Validator {
         return self;
     }
 
-    method validate($data) {
+    method validate($data is copy) {
         self.prepare() unless $!is-prepared;
 
         unless ( $data ~~ Hash ) {
@@ -140,31 +148,25 @@ class LIVR::Validator {
     }
 
     method !auto-trim($data) {
-        # my $ref_type = ref($data);
-        #
-        # if ( !$ref_type && $data ) {
-        #     $data =~ s/^\s+//;
-        #     $data =~ s/\s+$//;
-        #     return $data;
-        # }
-        # elsif ( $ref_type eq 'HASH' ) {
-        #     my $trimmed_data = {};
-        #
-        #     foreach my $key ( keys %$data ) {
-        #         $trimmed_data->{$key} = $self->_auto_trim( $data->{$key} );
-        #     }
-        #
-        #     return $trimmed_data;
-        # }
-        # elsif ( $ref_type eq 'ARRAY' ) {
-        #     my $trimmed_data = [];
-        #
-        #     for ( my $i = 0; $i < @$data; $i++ ) {
-        #         $trimmed_data->[$i] = $self->_auto_trim( $data->[$i] )
-        #     }
-        #
-        #     return $trimmed_data;
-        # }
+        if ( $data ~~ Str ) {
+            return $data.trim;
+        } elsif ( $data ~~ Hash ) {
+            my $trimmed-data = {};
+        
+            for %$data.kv -> $key, $value {
+                $trimmed-data{$key} = self!auto-trim( $value );
+            }
+        
+            return $trimmed-data;
+        } elsif ( $data ~~ Array ) {
+            my $trimmed-data = [];
+        
+            for @$data -> $value {
+                $trimmed-data.push( self!auto-trim( $value ) );
+            }
+        
+            return $trimmed-data;
+        }
 
         return $data;
     }
