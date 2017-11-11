@@ -28,7 +28,7 @@ our sub to_uc([], %builders) {
     };
 }
 
-our sub remove([$chars], %builders) {
+our sub remove([Str $chars], %builders) {
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
         
@@ -37,7 +37,7 @@ our sub remove([$chars], %builders) {
     };
 }
 
-our sub leave_only([$chars], %builders) {
+our sub leave_only([Str $chars], %builders) {
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
         
@@ -51,7 +51,7 @@ our sub leave_only([$chars], %builders) {
     };
 }
 
-our sub default([$default-value], %builders) {
+our sub default([Cool $default-value], %builders) {
     return sub ($value, %all-values, $output is rw) {
         
         if is-no-value($value) {

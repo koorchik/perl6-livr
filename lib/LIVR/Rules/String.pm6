@@ -25,7 +25,7 @@ our sub one_of(@args is copy, %builders) {
 }
 
 
-our sub max_length([$max-length], %builders) {
+our sub max_length([Int $max-length], %builders) {
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
@@ -37,7 +37,7 @@ our sub max_length([$max-length], %builders) {
     };
 }
 
-our sub min_length([$min-length], %builders) {
+our sub min_length([Int $min-length], %builders) {
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
@@ -49,7 +49,7 @@ our sub min_length([$min-length], %builders) {
     };
 }
 
-our sub length_equal([$length], %builders) {
+our sub length_equal([Int $length], %builders) {
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
@@ -62,7 +62,7 @@ our sub length_equal([$length], %builders) {
     };
 }
 
-our sub length_between([$min-length, $max-length], %builders) {
+our sub length_between([Int $min-length, $max-length], %builders) {
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
@@ -77,15 +77,24 @@ our sub length_between([$min-length, $max-length], %builders) {
 
 our sub like([$re, $flags = ''], %builders) {
     my $is-ignore-case = $flags.match('i');
-    
-    # my $flagged-re = do {
-    #     my $m = $re;
-    #     $is-ignore-case ?? rx:P5:i/( <$m> )/ !! rx:P5/( <$m> )/;
-    # };
+    my $flagged-re;
 
-    # dd $flagged-re;
-    my $flagged-re = $is-ignore-case ?? rx:i:P5/$re/ !! rx:P5/$re/;
-    dd $flagged-re;
+    if $re ~~ Regex {
+        # By livr-spec we expect  regex string (compatible cross languages). 
+        # But if you want to use perl6 Regex than it will work too. 
+        $flagged-re = $re;
+    } else {
+        # $flagged-re = do {
+        #     my $m = $re;
+        #     $is-ignore-case ?? rx:P5:i/( <$m> )/ !! rx:P5/( <$m> )/;
+        # };
+
+        # dd $flagged-re;
+        die 'Use Perl6 Regex objects with "like". String regexes are not supported yet';
+        $flagged-re = $is-ignore-case ?? rx:i:P5/$re/ !! rx:P5/$re/;
+        dd $flagged-re;
+    }
+
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
@@ -107,7 +116,7 @@ our sub string([], %builders) {
     };
 }
 
-our sub equal([$allowed-value], %builders) {
+our sub equal([Cool $allowed-value], %builders) {
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;

@@ -2,7 +2,7 @@ unit package LIVR::Rules::Meta;
 use LIVR::Validator;
 use LIVR::Utils;
 
-our sub nested_object([$livr-rules], %builders) {
+our sub nested_object([Hash $livr-rules], %builders) {
     my $validator = LIVR::Validator.new(livr-rules => $livr-rules)
         .register-rules(%builders)
         .prepare();
@@ -62,7 +62,7 @@ our sub list_of(@args is copy, %builders) {
     }
 }
 
-our sub list_of_objects([$livr-rules], %builders) {
+our sub list_of_objects([Hash $livr-rules], %builders) {
     my $validator = LIVR::Validator.new(livr-rules => $livr-rules)
         .register-rules(%builders)
         .prepare();
@@ -94,7 +94,7 @@ our sub list_of_objects([$livr-rules], %builders) {
     }
 }
 
-our sub list_of_different_objects([$selector-field, $livrs], %builders) {
+our sub list_of_different_objects([Str $selector-field, Hash $livrs], %builders) {
     my %validators;
     
     for %$livrs.kv -> $selector-value, $livr-rules {
@@ -138,7 +138,7 @@ our sub list_of_different_objects([$selector-field, $livrs], %builders) {
     }
 }
 
-our sub variable_object([$selector-field, $livrs], %builders) {
+our sub variable_object([Str $selector-field, Hash $livrs], %builders) {
     my %validators;
     
     for %$livrs.kv -> $selector-value, $livr-rules {

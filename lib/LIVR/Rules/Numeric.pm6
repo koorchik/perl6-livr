@@ -52,7 +52,7 @@ our sub positive_decimal([], %builders) {
     };
 }
 
-our sub max_number([$max-number], %builders) {
+our sub max_number([Numeric $max-number], %builders) {
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
@@ -65,7 +65,7 @@ our sub max_number([$max-number], %builders) {
     };
 }
 
-our sub min_number([$min-number], %builders) {
+our sub min_number([Numeric $min-number], %builders) {
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
@@ -78,7 +78,7 @@ our sub min_number([$min-number], %builders) {
     };
 }
 
-our sub number_between([$min-number, $max-number], %builders) {
+our sub number_between([Numeric $min-number, Numeric $max-number], %builders) {
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;

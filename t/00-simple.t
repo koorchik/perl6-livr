@@ -12,7 +12,7 @@ subtest 'POSITIVE: required' => {
     my $validated = $validator.validate({
         name      => 'koorchik',
         email     => 'koorchik@gmail.com',
-        somefield => 'This field has not validation'
+        somefield => 'This field has no validation'
     });
 
     ok $validated, 'Should return true on success validation';

@@ -7,7 +7,7 @@ LIVR::Validator - Lightweight Perl6 validator supporting Language Independent Va
 =head1 SYNOPSIS
 
     # Common usage
-    LIVR::Validator.default-auto-trim(1);
+    LIVR::Validator.default-auto-trim(True);
 
     my $validator = LIVR::Validator.new(livr-rules => {
         name      => 'required',
@@ -18,8 +18,8 @@ LIVR::Validator - Lightweight Perl6 validator supporting Language Independent Va
         password2 => { equal_to_field => 'password' }
     });
 
-    if ( my $valid_data = $validator.validate($user-data) ) {
-       save-user($valid_data);
+    if my $valid-data = $validator.validate($user-data) {
+       save-user($valid-data);
     } else {
        my $errors = $validator.errors();
        ...
@@ -243,11 +243,11 @@ Enables or disables automatic trim for input data. If is on then every new valid
 
 =head2 $VALIDATOR.validate(\%INPUT)
 
-Validates user input. On success returns $VALID_DATA (contains only data that has described validation rules). On error return false.
+Validates user input. On success returns $VALID-DATA (contains only data that has described validation rules). On error return false.
 
-    my $VALID_DATA = $VALIDATOR.validate(\%INPUT)
+    my $VALID-DATA = $VALIDATOR.validate(\%INPUT)
 
-    if ($VALID_DATA) {
+    if ($VALID-DATA) {
 
     } else {
         my $errors = $VALIDATOR.errors();

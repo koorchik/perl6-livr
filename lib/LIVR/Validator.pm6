@@ -7,18 +7,25 @@ class LIVR::Validator {
     has %!validators;
     has %!validator-builders;
 
-    my %DEFAULT_RULES;
+    my %DEFAULT-RULES;
+
+    my $IS-DEFAULT-AUTO-TRIM = 0;
 
     method register-default-rules(%rules) {
-        %DEFAULT_RULES.push(%rules);
+        %DEFAULT-RULES.push(%rules);
     }
 
     method get-default-rules() {
-        return %DEFAULT_RULES;
+        return %DEFAULT-RULES;
     }
 
-    submethod BUILD(:%!livr-rules, :$!is-auto-trim) {
-        self.register-rules(%DEFAULT_RULES);
+    method default-auto-trim(Bool:D $is-auto-trim) {
+        $IS-DEFAULT-AUTO-TRIM = $is-auto-trim;
+    }
+
+    submethod BUILD(:%!livr-rules, Bool :$is-auto-trim) {
+        $!is-auto-trim = $is-auto-trim.defined ?? $is-auto-trim !! $IS-DEFAULT-AUTO-TRIM;
+        self.register-rules(%DEFAULT-RULES);
     }
 
     method register-rules(%rules) {
@@ -34,7 +41,7 @@ class LIVR::Validator {
         %!validator-builders;
     }
 
-    method register-aliased-rule($alias) {
+    method register-aliased-rule(Hash $alias) {
         die 'Alias name required' unless $alias<name>;
         %!validator-builders{ $alias<name> } = self!build-aliased-rule(%$alias);
         
