@@ -7,7 +7,7 @@ use Terminal::ANSIColor;
 use LIVR;
 
 iterate-test-data('test_suite/positive', sub (%data) {
-    return if %data<testname>.match('like');
+    return if %data<testname>.match('like'); # currently we support only perl6 regexes
 
     my $validator = LIVR::Validator.new( livr-rules => %data<rules> );
     my $output = $validator.validate( %data<input> );
@@ -19,7 +19,7 @@ iterate-test-data('test_suite/positive', sub (%data) {
 
 
 iterate-test-data('test_suite/negative', sub (%data) {
-    return if %data<testname>.match('like');
+    return if %data<testname>.match('like'); # currently we support only perl6 regexes
 
     my $validator = LIVR::Validator.new( livr-rules => %data<rules> );
     my $output = $validator.validate( %data<input> );

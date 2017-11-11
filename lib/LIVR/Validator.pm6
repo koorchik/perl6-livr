@@ -12,7 +12,7 @@ class LIVR::Validator {
     my $IS-DEFAULT-AUTO-TRIM = 0;
 
     method register-default-rules(%rules) {
-        %DEFAULT-RULES.push(%rules);
+        %DEFAULT-RULES = (%DEFAULT-RULES, %rules);
     }
 
     method get-default-rules() {

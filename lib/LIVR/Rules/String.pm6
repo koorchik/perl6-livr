@@ -84,15 +84,13 @@ our sub like([$re, $flags = ''], %builders) {
         # But if you want to use perl6 Regex than it will work too. 
         $flagged-re = $re;
     } else {
-        # $flagged-re = do {
-        #     my $m = $re;
-        #     $is-ignore-case ?? rx:P5:i/( <$m> )/ !! rx:P5/( <$m> )/;
-        # };
-
-        # dd $flagged-re;
-        die 'Use Perl6 Regex objects with "like". String regexes are not supported yet';
-        $flagged-re = $is-ignore-case ?? rx:i:P5/$re/ !! rx:P5/$re/;
-        dd $flagged-re;
+        die 'Use Perl6 Regex objects with "like" rule. String regexes are not supported yet';
+        # TODO: I do not know how to build Perl5 regex from string in Perl6
+        
+        # This will not work.
+        # $flagged-re = $is-ignore-case ?? rx:i:P5/$re/ !! rx:P5/$re/;
+        
+        # It is possibe to done this with EVAL, but I would like to avoid implicit EVALs.
     }
 
     return sub ($value, %all-values, $output is rw) {
