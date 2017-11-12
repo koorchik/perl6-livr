@@ -2,7 +2,6 @@ use lib 'lib';
 
 use Test;
 use JSON::Tiny;
-use Terminal::ANSIColor;
 
 use LIVR;
 
@@ -60,7 +59,7 @@ done-testing;
 sub iterate-test-data($dir-basename, $cb) {
     my $Bin = "$*CWD/t"; # TODO use something like FindBin
     my $dir-fullname = "$Bin/$dir-basename";
-    note( colored($dir-fullname, 'yellow bold') );
+    note( "PROCESSING: $dir-fullname" );
 
     for dir $dir-fullname -> $testdir {
         my %data = testname => $testdir;

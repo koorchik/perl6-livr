@@ -1,11 +1,12 @@
-=for HTML <a href="https://travis-ci.org/koorchik/perl6-livr"><img src="https://travis-ci.org/koorchik/perl6-livr.svg?branch=master"></a>
+[![Build Status](https://travis-ci.org/koorchik/perl6-livr.svg?branch=master)](https://travis-ci.org/koorchik/perl6-livr)
 
-=head1 NAME
+# LIVR::Validator
 
-LIVR::Validator - Lightweight Perl6 validator supporting Language Independent Validation Rules Specification (LIVR)
+Lightweight Perl6 validator supporting Language Independent Validation Rules Specification (LIVR)
 
-=head1 SYNOPSIS
+## SYNOPSIS
 
+```perl6
     ### Common usage
     use LIVR;
 
@@ -92,234 +93,223 @@ LIVR::Validator - Lightweight Perl6 validator supporting Language Independent Va
         });
     }
 
-=head1 DESCRIPTION
+```
 
-L<LIVR::Validator> lightweight validator supporting Language Independent Validation Rules Specification (LIVR)
+## DESCRIPTION
 
-See L<http://livr-spec.org> for rules documentation.
+LIVR::Validator lightweight validator supporting Language Independent Validation Rules Specification (LIVR)
+
+See ['LIVR Specification'](http://livr-spec.org) for rules documentation.
 
 Features:
 
-=over 4
+* Rules are declarative and language independent
+* Any number of rules for each field
+* Return together errors for all fields
+* Excludes all fields that do not have validation rules described
+* Has possibility to validatate complex hierarchical structures
+* Easy to describe and undersand rules
+* Returns understandable error codes(not error messages)
+* Easy to add own rules
+* Multipurpose (user input validation, configs validation, contracts programming etc)
 
-=item * Rules are declarative and language independent
+## CLASS METHODS
 
-=item * Any number of rules for each field
-
-=item * Return together errors for all fields
-
-=item * Excludes all fields that do not have validation rules described
-
-=item * Has possibility to validatate complex hierarchical structures
-
-=item * Easy to describe and undersand rules
-
-=item * Returns understandable error codes(not error messages)
-
-=item * Easy to add own rules
-
-=item * Multipurpose (user input validation, configs validation, contracts programming etc)
-
-=back
-
-=head1 CLASS METHODS
-
-=head2 LIVR::Validator.new(livr-rules =>  $LIVR, is-auto-trim => $IS-AUTO-TRIM)
+### LIVR::Validator.new(livr-rules =>  $LIVR, is-auto-trim => $IS-AUTO-TRIM)
 
 Contructor creates validator objects.
 
-$LIVR - validations rules. Rules description is available here - L<https://github.com/koorchik/LIVR>
+$LIVR - validations rules. Rules description is available here - ['LIVR Specification'](http://livr-spec.org)
 
 $IS-AUTO-TRIM - asks validator to trim all values before validation. Output will be also trimmed.
 if $IS-AUTO-TRIM is undef then default-auto-trim value will be used.
 
-=head2 LIVR::Validator.register-aliased-default-rule( $ALIAS )
+### LIVR::Validator.register-aliased-default-rule( $ALIAS )
 
 $ALIAS - is a hash that contains: name, rules, error (optional).
 
-    LIVR::Validator.register-aliased-default-rule({
-        name  => 'valid_address',
-        rules => { nested_object => {
-            country => 'required',
-            city    => 'required',
-            zip     => 'positive_integer'
-        }}
-    });
+```perl6
+LIVR::Validator.register-aliased-default-rule({
+    name  => 'valid_address',
+    rules => { nested_object => {
+        country => 'required',
+        city    => 'required',
+        zip     => 'positive_integer'
+    }}
+});
+```
 
 Then you can use "valid\_address" for validation:
 
-    {
-        address => 'valid_address'
-    }
+```perl6
+{
+    address => 'valid_address'
+}
+```
 
 
 You can register aliases with own errors:
 
-    LIVR::Validator.register-aliased-default-rule({
-        name  => 'adult_age'
-        rules => [ 'positive_integer', { min_number => 18 } ],
-        error => 'WRONG_AGE'
-    });
+```perl6
+LIVR::Validator.register-aliased-default-rule({
+    name  => 'adult_age'
+    rules => [ 'positive_integer', { min_number => 18 } ],
+    error => 'WRONG_AGE'
+});
+```
 
 All rules/aliases for the validator are equal. The validator does not distinguish "required", "list\_of\_different\_objects" and "trim" rules. So, you can extend validator with any rules/alias you like.
 
 
-=head2 LIVR::Validator.register-default-rules( RULE_NAME => &RULE_BUILDER, ... )
+### LIVR::Validator.register-default-rules( RULE_NAME => &RULE_BUILDER, ... )
 
 &RULE_BUILDER - is a subroutine reference which will be called for building single value validator.
 
-    LIVR::Validator.register-default-rules( my_rule => sub (@rule-args, %builders) {
-        # %builders - are rules from original validator
-        # to allow you create new validator with all supported rules
-        # my $validator = LIVR::Validator.new(livr-rules => $livr).register-rules(%builders).prepare();
+```perl6
+LIVR::Validator.register-default-rules( my_rule => sub (@rule-args, %builders) {
+    # %builders - are rules from original validator
+    # to allow you create new validator with all supported rules
+    # my $validator = LIVR::Validator.new(livr-rules => $livr).register-rules(%builders).prepare();
 
-        return sub ($value, $all-values, $output is rw) {
-            # We already have "required" rule to check that the value is present
-            # return if LIVR::Utils::is-no-value($value); # so it makes sense to skip empty values
+    return sub ($value, $all-values, $output is rw) {
+        # We already have "required" rule to check that the value is present
+        # return if LIVR::Utils::is-no-value($value); # so it makes sense to skip empty values
 
 
-            if ($not_valid) {
-                return "SOME_ERROR_CODE"
-            }
-            else {
-                # Do nothing 
-                $ or change output. Just assign a new value to $output
-            }
-        };
-    });
+        if ($not_valid) {
+            return "SOME_ERROR_CODE"
+        }
+        else {
+            # Do nothing 
+            $ or change output. Just assign a new value to $output
+        }
+    };
+});
+```
 
 Then you can use "my_rule" for validation:
 
-    {
-        name1 => 'my_rule' # Call without parameters
-        name2 => { 'my_rule' => $arg1 } # Call with one parameter.
-        name3 => { 'my_rule' => [$arg1] } # Call with one parameter.
-        name4 => { 'my_rule' => [ $arg1, $arg2, $arg3 ] } # Call with many parameters.
-    }
-
+```perl6
+{
+    name1 => 'my_rule' # Call without parameters
+    name2 => { 'my_rule' => $arg1 } # Call with one parameter.
+    name3 => { 'my_rule' => [$arg1] } # Call with one parameter.
+    name4 => { 'my_rule' => [ $arg1, $arg2, $arg3 ] } # Call with many parameters.
+}
+```
 
 Here is "max_number" implemenation:
 
-    sub max-number([Numeric $max-number], %builders) {
-        return sub ($value, %all-values, $output is rw) {
-            return if LIVR::Util::is-no-value($value);
-            return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
-            return 'NOT_NUMBER' unless looks-like-number($value);
+```perl6
+sub max-number([Numeric $max-number], %builders) {
+    return sub ($value, %all-values, $output is rw) {
+        return if LIVR::Util::is-no-value($value);
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+        return 'NOT_NUMBER' unless looks-like-number($value);
 
-            return 'TOO_HIGH' if $value > $max-number;
+        return 'TOO_HIGH' if $value > $max-number;
 
-            $output = $value.Numeric;
-            return;
-        };
-    }
+        $output = $value.Numeric;
+        return;
+    };
+}
 
-    LIVR::Validator.register-default-rules( max_number => &max-number );
+LIVR::Validator.register-default-rules( max_number => &max-number );
+```
 
 All rules for the validator are equal. The validator does not distinguish "required", "list_of_different_objects" and "trim" rules.
 So, you can extend validator with any rules you like.
 
 Just look at the existing rules implementation:
 
-=over 4
+* LIVR::Validator::Rules::Common
+* LIVR::Validator::Rules::String;
+* LIVR::Validator::Rules::Numeric;
+* LIVR::Validator::Rules::Special;
+* LIVR::Validator::Rules::Meta;
+* LIVR::Validator::Rules::Modifiers;
 
-=item * L<LIVR::Validator::Rules::Common>
-
-=item * L<LIVR::Validator::Rules::String>;
-
-=item * L<LIVR::Validator::Rules::Numeric>;
-
-=item * L<LIVR::Validator::Rules::Special>;
-
-=item * L<LIVR::Validator::Rules::Meta>;
-
-=item * L<LIVR::Validator::Rules::Modifiers>;
-
-=back
-
-All rules description is available here - L<https://github.com/koorchik/LIVR>
+All rules description is available here - ['LIVR Specification'](http://livr-spec.org)
 
 
-=head2 LIVR::Validator.get-default-rules( )
+### LIVR::Validator.get-default-rules( )
 
 returns hashref containing all default rule_builders for the validator.
 You can register new rule or update existing one with "register-rules" method.
 
-=head2 LIVR::Validator.default-auto-trim($IS-AUTO-TRIM)
+### LIVR::Validator.default-auto-trim($IS-AUTO-TRIM)
 
 Enables or disables automatic trim for input data. If is on then every new validator instance will have auto trim option enabled
 
-=head1 OBJECT METHODS
+## OBJECT METHODS
 
-=head2 $VALIDATOR.validate(%INPUT)
+### $VALIDATOR.validate(%INPUT)
 
 Validates user input. On success returns $VALID-DATA (contains only data that has described validation rules). On error return false.
 
-    my $VALID-DATA = $VALIDATOR.validate(%INPUT)
+```perl6
+my $VALID-DATA = $VALIDATOR.validate(%INPUT)
 
-    if ($VALID-DATA) {
+if ($VALID-DATA) {
 
-    } else {
-        my $errors = $VALIDATOR.errors();
-    }
+} else {
+    my $errors = $VALIDATOR.errors();
+}
+```
 
-=head2 $VALIDATOR.errors( )
+### $VALIDATOR.errors( )
 
 Returns errors hash.
 
-    {
-        "field1" => "ERROR_CODE",
-        "field2" => "ERROR_CODE",
-        ...
-    }
+```perl6
+{
+    "field1" => "ERROR_CODE",
+    "field2" => "ERROR_CODE",
+    ...
+}
+```
 
 For example:
 
-    {
-        "country"  => "NOT_ALLOWED_VALUE",
-        "zip"      => "NOT_POSITIVE_INTEGER",
-        "street"   => "REQUIRED",
-        "building" => "NOT_POSITIVE_INTEGER"
-    },
+```perl6
+{
+    "country"  => "NOT_ALLOWED_VALUE",
+    "zip"      => "NOT_POSITIVE_INTEGER",
+    "street"   => "REQUIRED",
+    "building" => "NOT_POSITIVE_INTEGER"
+}
+```
 
-=head2 $VALIDATOR.register-rules( RULE_NAME => &RULE_BUILDER, ... )
+### $VALIDATOR.register-rules( RULE_NAME => &RULE_BUILDER, ... )
 
 &RULE_BUILDER - is a subtorutine reference which will be called for building single rule validator.
 
 See "LIVR::Validator.register-default-rules" for rules examples.
 
-=head2 $VALIDATOR.register-aliased-rule( $ALIAS )
+### $VALIDATOR.register-aliased-rule( $ALIAS )
 
 $ALIAS - is a composite validation rule.
 
 See "LIVR::Validator.register-aliased-default-rule" for rules examples.
 
-=head2 $VALIDATOR.get-rules( )
+### $VALIDATOR.get-rules( )
 
 returns hashref containing all rule_builders for the validator. You can register new rule or update existing one with "register-rules" method.
 
-=head1 AUTHOR
+## AUTHOR
 
 Viktor Turskyi, C<< <koorchik at cpan.org> >>
 
-=head1 BUGS
+## BUGS
 
 Please report any bugs or feature requests to Github L<https://github.com/koorchik/Validator-LIVR>
 
 
-=head1 SUPPORT
+## SUPPORT
 
-You can find documentation for this module with the perldoc command.
+See https://github.com/koorchik/perl6-livr
 
-    perldoc LIVR::Validator
-    
-
-You can also look for information at: https://github.com/koorchik/perl6-livr
-
-
-=head1 ACKNOWLEDGEMENTS
-
-
-=head1 LICENSE AND COPYRIGHT
+## LICENSE AND COPYRIGHT
 
 Copyright 2017 Viktor Turskyi.
 
@@ -358,6 +348,3 @@ YOUR LOCAL LAW. UNLESS REQUIRED BY LAW, NO COPYRIGHT HOLDER OR
 CONTRIBUTOR WILL BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, OR
 CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
-=cut
