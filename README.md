@@ -2,7 +2,7 @@
 
 # LIVR::Validator
 
-Lightweight Perl6 validator supporting Language Independent Validation Rules Specification (LIVR)
+Lightweight and powerfull Perl6 validator supporting Language Independent Validation Rules Specification (LIVR)
 
 ## SYNOPSIS
 
@@ -280,7 +280,7 @@ For example:
 }
 ```
 
-### $VALIDATOR.register-rules( RULE_NAME => &RULE_BUILDER, ... )
+### $VALIDATOR.register-rules( RULE_NAME => &RULE\_BUILDER, ... )
 
 &RULE_BUILDER - is a subtorutine reference which will be called for building single rule validator.
 
@@ -298,12 +298,14 @@ returns hashref containing all rule_builders for the validator. You can register
 
 ## AUTHOR
 
-Viktor Turskyi, C<< <koorchik at cpan.org> >>
+Viktor Turskyi, @koorchik
 
 ## BUGS
 
-Please report any bugs or feature requests to Github L<https://github.com/koorchik/Validator-LIVR>
+Please report any bugs or feature requests to Github 
 
+* Perl6 specific issues https://github.com/koorchik/perl6-livr/issues
+* The spec specific issues https://github.com/koorchik/livr/issues
 
 ## SUPPORT
 
@@ -317,7 +319,7 @@ This program is free software; you can redistribute it and/or modify it
 under the terms of the the Artistic License (2.0). You may obtain a
 copy of the full license at:
 
-L<http://www.perlfoundation.org/artistic_license_2_0>
+http://www.perlfoundation.org/artistic_license_2_0
 
 Any use, modification, and distribution of the Standard or Modified
 Versions is governed by this Artistic License. By using, modifying or

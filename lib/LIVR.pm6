@@ -1,4 +1,4 @@
-unit package LIVR;
+unit module LIVR;
 
 use LIVR::Validator;
 use LIVR::Rules::Common;
