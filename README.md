@@ -7,92 +7,91 @@ Lightweight and powerfull Perl6 validator supporting Language Independent Valida
 ## SYNOPSIS
 
 ```perl6
-    ### Common usage
-    use LIVR;
+### Common usage
+use LIVR;
 
-    LIVR::Validator.default-auto-trim(True);
+LIVR::Validator.default-auto-trim(True);
 
-    my $validator = LIVR::Validator.new(livr-rules => {
-        name      => 'required',
-        email     => [ 'required', 'email' ],
-        gender    => { one_of => ['male', 'female'] },
-        phone     => { max_length => 10 },
-        password  => [ 'required', {min_length => 10} ],
-        password2 => { equal_to_field => 'password' }
-    });
+my $validator = LIVR::Validator.new(livr-rules => {
+    name      => 'required',
+    email     => [ 'required', 'email' ],
+    gender    => { one_of => ['male', 'female'] },
+    phone     => { max_length => 10 },
+    password  => [ 'required', {min_length => 10} ],
+    password2 => { equal_to_field => 'password' }
+});
 
-    my $user-data = {
-        name      => 'Viktor',
-        email     => 'viktor@mail.com ',
-        gender    => 'male',
-        password  => 'mypassword123',
-        password2 => 'mypassword123'
-    }
+my $user-data = {
+    name      => 'Viktor',
+    email     => 'viktor@mail.com ',
+    gender    => 'male',
+    password  => 'mypassword123',
+    password2 => 'mypassword123'
+}
 
-    if my $valid-data = $validator.validate($user-data) {
-        #  $valid-data is clean and does contain only fields which have validation and have passed it
-        $valid-data.say;
-    } else {
-        my $errors = $validator.errors();
-        $errors.say;
-    }
+if my $valid-data = $validator.validate($user-data) {
+    #  $valid-data is clean and does contain only fields which have validation and have passed it
+    $valid-data.say;
+} else {
+    my $errors = $validator.errors();
+    $errors.say;
+}
 
-    ### You can use modifiers separately or can combine them with validation:
-    my $validator = LIVR::Validator.new(livr-rules => {
-        email => [ 'required', 'trim', 'email', 'to_lc' ]
-    });
+### You can use modifiers separately or can combine them with validation:
+my $validator = LIVR::Validator.new(livr-rules => {
+    email => [ 'required', 'trim', 'email', 'to_lc' ]
+});
 
-    ### Feel free to register your own rules
-    # You can use aliases(prefferable, syntax covered by the specification) for a lot of cases:
+### Feel free to register your own rules
+# You can use aliases(prefferable, syntax covered by the specification) for a lot of cases:
 
-    my $validator = LIVR::Validator.new(livr-rules => {
-        password => ['required', 'strong_password']
-    });
+my $validator = LIVR::Validator.new(livr-rules => {
+    password => ['required', 'strong_password']
+});
 
-    $validator.register-aliased-rule({
-        name  => 'strong_password',
-        rules => {min_length => 6},
-        error => 'WEAK_PASSWORD'
-    });
+$validator.register-aliased-rule({
+    name  => 'strong_password',
+    rules => {min_length => 6},
+    error => 'WEAK_PASSWORD'
+});
 
-    # or you can write more sophisticated rules directly
+# or you can write more sophisticated rules directly
 
-    my $validator = LIVR::Validator.new(livr-rules => {
-        password => ['required', 'strong_password']
-    });
+my $validator = LIVR::Validator.new(livr-rules => {
+    password => ['required', 'strong_password']
+});
 
-    $validator.register-rules( 'strong_password' =>  sub ([], %builders) {
-        return sub ($value, $all-values, $output is rw) {
-            # We already have "required" rule to check that the value is present
-            return if LIVR::Utils::is-no-value($value); # so we skip empty values
-            return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
+$validator.register-rules( 'strong_password' =>  sub ([], %builders) {
+    return sub ($value, $all-values, $output is rw) {
+        # We already have "required" rule to check that the value is present
+        return if LIVR::Utils::is-no-value($value); # so we skip empty values
+        return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
-            # Return error in case of failed validation
-            return 'WEAK_PASSWORD' if $value.chars < 6;
-            
-            # Change output value. We want always return value be a string
-            $output = $value.Str; 
+        # Return error in case of failed validation
+        return 'WEAK_PASSWORD' if $value.chars < 6;
+        
+        # Change output value. We want always return value be a string
+        $output = $value.Str; 
+        return;
+    };
+});
+
+### If you want to stop on the first error
+# you can overwrite all rules with your own which use exceptions
+my $default-rules = LIVR::Validator.get-default-rules();
+
+for %$default-rules.kv -> $rule-name, $rule-builder {
+    LIVR::Validator.register-default-rules($rule-name => sub (@args, %builders) {
+        my $value-validator = $rule-builder(@args, %builders);
+        
+        return sub ($value, $all-values, $output is rw)  {        
+            my $error = $value-validator($value, $all-values, $output);
+
+            die "ERROR: $error" if $error;
             return;
-        };
+        }
     });
-
-    ### If you want to stop on the first error
-    # you can overwrite all rules with your own which use exceptions
-    my $default-rules = LIVR::Validator.get-default-rules();
-
-    for %$default-rules.kv -> $rule-name, $rule-builder {
-        LIVR::Validator.register-default-rules($rule-name => sub (@args, %builders) {
-            my $value-validator = $rule-builder(@args, %builders);
-            
-            return sub ($value, $all-values, $output is rw)  {        
-                my $error = $value-validator($value, $all-values, $output);
-
-                die "ERROR: $error" if $error;
-                return;
-            }
-        });
-    }
-
+}
 ```
 
 ## DESCRIPTION
