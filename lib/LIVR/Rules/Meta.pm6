@@ -1,4 +1,4 @@
-unit package LIVR::Rules::Meta;
+unit module LIVR::Rules::Meta;
 use LIVR::Validator;
 use LIVR::Utils;
 

@@ -1,4 +1,4 @@
-unit package LIVR::Rules::String;
+unit module LIVR::Rules::String;
 use LIVR::Utils;
 
 our sub one_of(@args is copy, %builders) {

@@ -1,4 +1,4 @@
-unit package LIVR::Rules::Special;
+unit module LIVR::Rules::Special;
 use LIVR::Utils;
 use Email::Valid;
 

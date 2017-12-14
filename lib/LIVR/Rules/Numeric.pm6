@@ -1,4 +1,4 @@
-unit package LIVR::Rules::Numeric;
+unit module LIVR::Rules::Numeric;
 use LIVR::Utils;
 
 our sub integer([], %builders) {

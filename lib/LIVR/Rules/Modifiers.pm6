@@ -1,4 +1,4 @@
-unit package LIVR::Rules::Modifiers;
+unit module LIVR::Rules::Modifiers;
 use LIVR::Utils;
 
 our sub trim([], %builders) {

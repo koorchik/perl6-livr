@@ -1,4 +1,4 @@
-unit package LIVR::Rules::Common;
+unit module LIVR::Rules::Common;
 use LIVR::Utils;
 
 our sub required([], %builders) {

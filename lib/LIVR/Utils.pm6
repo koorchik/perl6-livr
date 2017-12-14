@@ -1,4 +1,4 @@
-unit package LIVR::Utils;
+unit module LIVR::Utils;
 
 our sub is-no-value($value --> Bool:D) is export {
     return False if $value ~~ Array;
