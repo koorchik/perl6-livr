@@ -197,7 +197,7 @@ Then you can use "my_rule" for validation:
 }
 ```
 
-Here is "max_number" implemenation:
+Here is "max_number" implementation:
 
 ```perl6
 sub max-number([Numeric $max-number], %builders) {
