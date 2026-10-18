@@ -1,0 +1,29 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 2024.02 has the old compiler, the newest Rakudo has RakuAST
+        raku: ['2024.02', 'latest']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Raku ${{ matrix.raku }}
+        uses: Raku/setup-raku@v1
+        with:
+          raku-version: ${{ matrix.raku }}
+
+      - name: Install dependencies
+        run: zef install --deps-only --/test .
+
+      - name: Run tests
+        run: zef test .

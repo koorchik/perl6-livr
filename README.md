@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/koorchik/perl6-livr.svg?branch=master)](https://travis-ci.org/koorchik/perl6-livr)
+[![Tests](https://github.com/koorchik/perl6-livr/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/koorchik/perl6-livr/actions/workflows/test.yml)
 
 # LIVR::Validator
 

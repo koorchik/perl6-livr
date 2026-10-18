@@ -1,0 +1,19 @@
+Revision history for LIVR
+
+2.2.0
+    - Compiles on current Rakudo: the "url" rule does not use a Perl 5 regex (:P5) anymore,
+      which the RakuAST compiler (the default one in Rakudo 2026.09) does not support
+    - "like" accepts regex strings in the common syntax (JavaScript, Perl, PCRE), as the
+      specification requires, besides Raku regexes
+    - "email" checks addresses like the JavaScript implementation, without Email::Valid.
+      Addresses with line breaks are rejected.
+    - LIVR has no dependencies now. JSON::Tiny is needed for the tests only.
+    - "or" passes empty values to its rule sets too, so "required" and "not_empty" in them work
+    - "list_of_different_objects" and "variable_object" return FORMAT_ERROR when the selector
+      value is a list or a hash
+    - "equal_to_field" does not warn when the other field is missing
+    - Updated the test suite to the current LIVR test suite
+    - Tests run on GitHub Actions with Rakudo 2024.02 and the newest one, instead of Travis CI
+    - Faster: building a validator with string "like" regexes is up to 21 times faster, as the
+      regexes are compiled once, validation is 1.4-2.3 times faster, the LIVR test suite runs
+      5.7 times faster
