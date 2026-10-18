@@ -1,6 +1,6 @@
 Revision history for LIVR
 
-2.2.0
+{{$NEXT}}
     - Compiles on current Rakudo: the "url" rule does not use a Perl 5 regex (:P5) anymore,
       which the RakuAST compiler (the default one in Rakudo 2026.09) does not support
     - "like" accepts regex strings in the common syntax (JavaScript, Perl, PCRE), as the
