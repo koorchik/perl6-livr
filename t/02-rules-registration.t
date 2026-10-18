@@ -29,7 +29,7 @@ $validator.register-rules( 'alphanumeric' => sub ([], %builders) {
         return if LIVR::Utils::is-no-value($value);
         return 'FORMAT_ERROR' if $value !~~ Str && $value !~~ Numeric;
 
-        return 'NOT_ALPHANUMERIC' if $value !~~ rx:P5/^[a-z0-9]+$/;
+        return 'NOT_ALPHANUMERIC' if $value !~~ rx/^ <[a..z0..9]>+ $/;
         return;
     }
 });

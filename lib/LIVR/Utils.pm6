@@ -6,7 +6,9 @@ our sub is-no-value($value --> Bool:D) is export {
     return !$value.defined || $value eq '' 
 }
 
+my $number-re = rx/^ '-'? \d+ [ '.' \d* ]? $/;
+
 our sub looks-like-number($value --> Bool:D) is export {
-    return $value ~~ /^\-?\d<[\d.]>*$/ 
-        && $value.comb.grep(* eq '.').elems <= 1;
+    return True if $value.WHAT =:= Int;
+    return so $value ~~ $number-re;
 }

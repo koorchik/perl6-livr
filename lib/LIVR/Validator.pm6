@@ -4,7 +4,7 @@ class LIVR::Validator {
     has $.errors is readonly;
 
     has Bool $!is-prepared = False;
-    has %!validators;
+    has @!field-validators; # field name => validators of the field
     has %!validator-builders;
 
     my %DEFAULT-RULES;
@@ -30,13 +30,13 @@ class LIVR::Validator {
 
     submethod BUILD(:%!livr-rules, Bool :$is-auto-trim) {
         $!is-auto-trim = $is-auto-trim.defined ?? $is-auto-trim !! $IS-DEFAULT-AUTO-TRIM;
-        self.register-rules(%DEFAULT-RULES);
+        %!validator-builders = %DEFAULT-RULES;
     }
 
     method register-rules(%rules) {
-        for %rules.kv -> $name, $builder {
-            die "RULE_BUILDER [$name] SHOULD BE A CODEREF" unless $builder ~~ Block;
-            %!validator-builders{$name} = $builder;
+        for %rules.pairs -> $rule {
+            die "RULE_BUILDER [{$rule.key}] SHOULD BE A CODEREF" unless $rule.value ~~ Block;
+            %!validator-builders{$rule.key} = $rule.value;
         }
 
         return self;
@@ -54,7 +54,9 @@ class LIVR::Validator {
     }
 
     method prepare {
-        for %.livr-rules.kv -> $field, $field-rules {
+        @!field-validators = ();
+
+        for %!livr-rules.kv -> $field, $field-rules {
             my @field-rules = $field-rules ~~ Array ?? @$field-rules !! [$field-rules];
 
             my @validators;
@@ -63,7 +65,7 @@ class LIVR::Validator {
                 @validators.push( self!build-validator($rule-name, $rule-args) );
             }
 
-            %!validators{$field} = @validators;
+            @!field-validators.push( $field => @validators ) if @validators;
         }
 
         $!is-prepared = True;
@@ -83,31 +85,33 @@ class LIVR::Validator {
 
         my ( %errors, %result );
 
-        for %!validators.kv -> $field-name, $validators {
-            next unless $validators && $validators.elems;
-
+        for @!field-validators -> $field-validators {
+            my $field-name = $field-validators.key;
             my $value = $data{$field-name};
-            my $is-ok = True;
 
-            for @$validators -> $validator-cb {
-                my $field-result = %result{$field-name} // $value;
+            # The output of the previous rules, the same as %result{$field-name}
+            my $has-output = False;
+            my $output;
 
-                my $error-code = $validator-cb(
-                    %result{$field-name}:exists ?? %result{$field-name} !! $value,
-                    $data,
-                    $field-result
-                );
+            for $field-validators.value.list -> $validator-cb {
+                my $field-result = $output // $value;
+
+                my $error-code = $validator-cb( $has-output ?? $output !! $value, $data, $field-result );
 
                 if $error-code {
                     %errors{$field-name} = $error-code;
-                    $is-ok = False;
+                    $has-output = False;
                     last;
                 } elsif $field-result.defined {
-                    %result{$field-name} = $field-result;
-                } elsif $data{$field-name}:exists && ! (%result{$field-name}:exists) {
-                    %result{$field-name} = $field-result;
+                    $has-output = True;
+                    $output = $field-result;
+                } elsif !$has-output && ($data{$field-name}:exists) {
+                    $has-output = True;
+                    $output = $field-result;
                 }
             }
+
+            %result{$field-name} = $output if $has-output;
         }
 
         if %errors.elems {

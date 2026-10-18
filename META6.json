@@ -4,8 +4,7 @@
   ],
   "build-depends" : [ ],
   "depends" : [
-    "JSON::Tiny",
-    "Email::Valid"
+    "JSON::Tiny"
   ],
   "description" : "Lightweight Perl validator supporting Language Independent Validation Rules Specification (LIVR)",
   "license" : "Artistic-2.0",
@@ -13,6 +12,7 @@
   "perl" : "6.c",
   "provides" : {
     "LIVR" : "lib/LIVR.pm6",
+    "LIVR::Regex" : "lib/LIVR/Regex.pm6",
     "LIVR::Rules::Common" : "lib/LIVR/Rules/Common.pm6",
     "LIVR::Rules::Meta" : "lib/LIVR/Rules/Meta.pm6",
     "LIVR::Rules::Modifiers" : "lib/LIVR/Rules/Modifiers.pm6",

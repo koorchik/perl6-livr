@@ -94,6 +94,17 @@ our sub list_of_objects([Hash $livr-rules], %builders) {
     }
 }
 
+# The selector value must be a string or a number. A list or a hash
+# would make a hash slice of %validators instead of a key lookup.
+sub select-validator(%validators, $object, $selector-field) {
+    return Nil if $object !~~ Hash;
+
+    my $selector-value = $object{$selector-field};
+    return Nil if ($selector-value !~~ Str && $selector-value !~~ Numeric) || !$selector-value;
+
+    return %validators{ $selector-value.Str };
+}
+
 our sub list_of_different_objects([Str $selector-field, Hash $livrs], %builders) {
     my %validators;
     
@@ -112,12 +123,13 @@ our sub list_of_different_objects([Str $selector-field, Hash $livrs], %builders)
         my ( @results, @errors );
 
         for @$objects -> $object {
-            if $object !~~ Hash || !$object{$selector-field} || !%validators{ $object{$selector-field} } {
+            my $validator = select-validator(%validators, $object, $selector-field);
+
+            unless $validator {
                 @errors.push('FORMAT_ERROR');
                 next;
             }
 
-            my $validator = %validators{ $object{$selector-field} };
             my $result = $validator.validate($object);
             
             if $result.defined {
@@ -152,11 +164,9 @@ our sub variable_object([Str $selector-field, Hash $livrs], %builders) {
     return sub ($object, %all-values, $output is rw) {
         return if is-no-value($object);
 
-        if $object !~~ Hash || !$object{$selector-field} || !%validators{ $object{$selector-field} } {
-            return 'FORMAT_ERROR';
-        }
+        my $validator = select-validator(%validators, $object, $selector-field);
+        return 'FORMAT_ERROR' unless $validator;
 
-        my $validator = %validators{ $object{$selector-field} };
         my $result = $validator.validate( $object );
 
         if $result.defined {
@@ -176,8 +186,7 @@ our sub livr_or(@rule-sets, %builders) {
     });
 
     return sub ($value, %all-values, $output is rw) {
-        return if is-no-value($value);
-
+        # Empty values go to the rule sets too, so "required" and "not_empty" in them work
         my $last-error;
 
         for @validators -> $validator {

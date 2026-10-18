@@ -38,10 +38,11 @@ our sub remove([Str $chars], %builders) {
 }
 
 our sub leave_only([Str $chars], %builders) {
+    my $chars-set = set($chars.comb);
+
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
         
-        my $chars-set = set($chars.comb);
         $output= $value.comb.grep(-> $c { $chars-set{$c} }).join('');
 
         # Does not work. Bug in Perl6 https://github.com/rakudo/rakudo/issues/1227

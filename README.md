@@ -112,6 +112,22 @@ Features:
 * Easy to add own rules
 * Multipurpose (user input validation, configs validation, contracts programming etc)
 
+### The "like" rule
+
+The "like" rule accepts a regex string in the common syntax (JavaScript, Perl, PCRE), as the specification requires,
+or a native Raku regex:
+
+```perl6
+my $validator = LIVR::Validator.new(livr-rules => {
+    name  => { like => '^[a-z]+$' },
+    code  => { like => ['^[a-z]{2}\d+$', 'i'] }, # with flags. Only "i" is supported
+    login => { like => rx/^ <[a..z]>+ $/ },      # a Raku regex. Use rx:i// to ignore case
+});
+```
+
+String regexes are translated to Raku regexes. Backreferences, inline flags like `(?i)` and
+Unicode properties like `\p{L}` are not supported: the rule dies when it is built.
+
 ## CLASS METHODS
 
 ### LIVR::Validator.new(livr-rules =>  $LIVR, is-auto-trim => $IS-AUTO-TRIM)

@@ -1,5 +1,6 @@
 unit module LIVR::Rules::String;
 use LIVR::Utils;
+use LIVR::Regex;
 
 our sub one_of(@args is copy, %builders) {
     my @allowed-values;
@@ -75,8 +76,29 @@ our sub length_between([Int $min-length, $max-length], %builders) {
     };
 }
 
+# Compiling a regex takes milliseconds, so the regexes of "like" rules are compiled once
+my %LIKE-REGEXES;
+my $LIKE-REGEXES-LOCK = Lock.new;
+
+sub compile-like-regex(Str $re, Bool $is-ignore-case --> Regex) {
+    my $key = ($is-ignore-case ?? 'i/' !! '/') ~ $re;
+
+    return $LIKE-REGEXES-LOCK.protect: {
+        %LIKE-REGEXES = () if %LIKE-REGEXES.elems >= 1000;
+
+        %LIKE-REGEXES{$key} //= do {
+            my $raku-re = translate-regex($re);
+            my $flagged-re = $is-ignore-case ?? rx:i/<$raku-re>/ !! rx/<$raku-re>/;
+
+            # The interpolated regex is compiled on the first match. Match now, so that
+            # a wrong regex fails when the rule is built, not on validation.
+            '' ~~ $flagged-re;
+            $flagged-re;
+        }
+    };
+}
+
 our sub like([$re, $flags = ''], %builders) {
-    my $is-ignore-case = $flags.match('i');
     my $flagged-re;
 
     if $re ~~ Regex {
@@ -84,13 +106,7 @@ our sub like([$re, $flags = ''], %builders) {
         # But if you want to use perl6 Regex than it will work too. 
         $flagged-re = $re;
     } else {
-        die 'Use Perl6 Regex objects with "like" rule. String regexes are not supported yet';
-        # TODO: I do not know how to build Perl5 regex from string in Perl6
-        
-        # This will not work.
-        # $flagged-re = $is-ignore-case ?? rx:i:P5/$re/ !! rx:P5/$re/;
-        
-        # It is possibe to done this with EVAL, but I would like to avoid implicit EVALs.
+        $flagged-re = compile-like-regex(~$re, so $flags.match('i'));
     }
 
     return sub ($value, %all-values, $output is rw) {
