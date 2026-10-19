@@ -43,7 +43,7 @@ my $validator = LIVR::Validator.new(livr-rules => {
 });
 
 ### Feel free to register your own rules
-# You can use aliases(prefferable, syntax covered by the specification) for a lot of cases:
+# You can use aliases (preferable, syntax covered by the specification) for a lot of cases:
 
 my $validator = LIVR::Validator.new(livr-rules => {
     password => ['required', 'strong_password']
@@ -207,7 +207,7 @@ Unicode properties like `\p{L}` are not supported: the rule dies when it is buil
 
 ### LIVR::Validator.new(livr-rules =>  $LIVR, is-auto-trim => $IS-AUTO-TRIM)
 
-Contructor creates validator objects.
+Constructor creates validator objects.
 
 $LIVR - validations rules. Rules description is available here - ['LIVR Specification'](http://livr-spec.org)
 
@@ -372,7 +372,7 @@ For example:
 
 ### $VALIDATOR.register-rules( RULE_NAME => &RULE\_BUILDER, ... )
 
-&RULE_BUILDER - is a subtorutine reference which will be called for building single rule validator.
+&RULE_BUILDER - is a subroutine reference which will be called for building single rule validator.
 
 See "LIVR::Validator.register-default-rules" for rules examples.
 
@@ -392,7 +392,7 @@ Viktor Turskyi, @koorchik
 
 ## BUGS
 
-Please report any bugs or feature requests to Github 
+Please report any bugs or feature requests to GitHub:
 
 * Raku specific issues https://github.com/koorchik/perl6-livr/issues
 * The spec specific issues https://github.com/koorchik/livr/issues
@@ -406,7 +406,7 @@ See https://github.com/koorchik/perl6-livr
 Copyright 2015-2026 Viktor Turskyi.
 
 This program is free software; you can redistribute it and/or modify it
-under the terms of the the Artistic License (2.0). You may obtain a
+under the terms of the Artistic License (2.0). You may obtain a
 copy of the full license at:
 
 http://www.perlfoundation.org/artistic_license_2_0
