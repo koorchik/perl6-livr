@@ -113,6 +113,80 @@ Features:
 * Multipurpose (user input validation, configs validation, contracts programming etc)
 * Zero dependencies (JSON::Tiny is needed only to run the tests)
 
+### Supported rules
+
+All rules of the LIVR specification are supported. Every rule name links to its page in the specification,
+with live examples and the full list of error codes.
+
+Rules other than `required`, `not_empty`, `not_empty_list` and `default`
+[skip empty values](https://livr-spec.org/validation-rules.html#empty-values-are-skipped) (missing, undefined
+or an empty string), so add `required` to the rules of mandatory fields.
+
+[Common rules](https://livr-spec.org/validation-rules/common-rules.html)
+
+| Rule | Example | Description |
+|------|---------|-------------|
+| [required](https://livr-spec.org/validation-rules/required.html) | `'required'` | The value is present: not missing, not undefined and not an empty string |
+| [not_empty](https://livr-spec.org/validation-rules/not_empty.html) | `'not_empty'` | The value is not an empty string, if the field is passed |
+| [not_empty_list](https://livr-spec.org/validation-rules/not_empty_list.html) | `'not_empty_list'` | The value is a list with at least one element |
+| [any_object](https://livr-spec.org/validation-rules/any_object.html) | `'any_object'` | The value is a hash. Its content is not validated |
+
+[String rules](https://livr-spec.org/validation-rules/string-rules.html)
+
+| Rule | Example | Description |
+|------|---------|-------------|
+| [string](https://livr-spec.org/validation-rules/string.html) | `'string'` | The value is a string or a number, converted to a string |
+| [eq](https://livr-spec.org/validation-rules/eq.html) | `{ eq => 'yes' }` | The value is equal to the given one |
+| [one_of](https://livr-spec.org/validation-rules/one_of.html) | `{ one_of => ['male', 'female'] }` | The value is one of the allowed values |
+| [max_length](https://livr-spec.org/validation-rules/max_length.html) | `{ max_length => 10 }` | The string is not longer than the given number of characters |
+| [min_length](https://livr-spec.org/validation-rules/min_length.html) | `{ min_length => 3 }` | The string is at least the given number of characters long |
+| [length_between](https://livr-spec.org/validation-rules/length_between.html) | `{ length_between => [3, 10] }` | The string length is between the two values, inclusive |
+| [length_equal](https://livr-spec.org/validation-rules/length_equal.html) | `{ length_equal => 5 }` | The string is exactly the given number of characters long |
+| [like](https://livr-spec.org/validation-rules/like.html) | `{ like => '^[a-z]+$' }` | The value matches a regex, see [the "like" rule](#the-like-rule) |
+
+[Numeric rules](https://livr-spec.org/validation-rules/numeric-rules.html)
+
+| Rule | Example | Description |
+|------|---------|-------------|
+| [integer](https://livr-spec.org/validation-rules/integer.html) | `'integer'` | The value is an integer |
+| [positive_integer](https://livr-spec.org/validation-rules/positive_integer.html) | `'positive_integer'` | The value is an integer greater than zero |
+| [decimal](https://livr-spec.org/validation-rules/decimal.html) | `'decimal'` | The value is a number, an integer or a decimal |
+| [positive_decimal](https://livr-spec.org/validation-rules/positive_decimal.html) | `'positive_decimal'` | The value is a number greater than zero |
+| [max_number](https://livr-spec.org/validation-rules/max_number.html) | `{ max_number => 100 }` | The number is not greater than the given value |
+| [min_number](https://livr-spec.org/validation-rules/min_number.html) | `{ min_number => 1 }` | The number is not less than the given value |
+| [number_between](https://livr-spec.org/validation-rules/number_between.html) | `{ number_between => [1, 100] }` | The number is between the two values, inclusive |
+
+[Special rules](https://livr-spec.org/validation-rules/special-rules.html)
+
+| Rule | Example | Description |
+|------|---------|-------------|
+| [email](https://livr-spec.org/validation-rules/email.html) | `'email'` | The value is an email address |
+| [url](https://livr-spec.org/validation-rules/url.html) | `'url'` | The value is an http or https URL |
+| [iso_date](https://livr-spec.org/validation-rules/iso_date.html) | `'iso_date'` | The value is an ISO 8601 date without time, like `2014-08-14` |
+| [equal_to_field](https://livr-spec.org/validation-rules/equal_to_field.html) | `{ equal_to_field => 'password' }` | The value is equal to the value of another field |
+
+[Metarules](https://livr-spec.org/validation-rules/metarules.html)
+
+| Rule | Example | Description |
+|------|---------|-------------|
+| [nested_object](https://livr-spec.org/validation-rules/nested_object.html) | `{ nested_object => { city => 'required' } }` | Validates a nested hash with the given rules |
+| [variable_object](https://livr-spec.org/validation-rules/variable_object.html) | `{ variable_object => ['type', { book => {...}, dvd => {...} }] }` | Validates a hash with the rules chosen by the value of its selector field |
+| [list_of](https://livr-spec.org/validation-rules/list_of.html) | `{ list_of => 'positive_integer' }` | Validates every element of a list with the given rules |
+| [list_of_objects](https://livr-spec.org/validation-rules/list_of_objects.html) | `{ list_of_objects => { id => 'required' } }` | Validates every hash in a list with the given rules |
+| [list_of_different_objects](https://livr-spec.org/validation-rules/list_of_different_objects.html) | `{ list_of_different_objects => ['type', { book => {...}, dvd => {...} }] }` | Validates every hash in a list with the rules chosen by its selector field |
+| [or](https://livr-spec.org/validation-rules/or.html) | `{ or => ['email', 'positive_integer'] }` | Passes if any of the rule sets passes (experimental) |
+
+[Modifiers](https://livr-spec.org/validation-rules/modifiers.html)
+
+| Rule | Example | Description |
+|------|---------|-------------|
+| [trim](https://livr-spec.org/validation-rules/trim.html) | `'trim'` | Removes leading and trailing whitespace |
+| [to_lc](https://livr-spec.org/validation-rules/to_lc.html) | `'to_lc'` | Converts the string to lower case |
+| [to_uc](https://livr-spec.org/validation-rules/to_uc.html) | `'to_uc'` | Converts the string to upper case |
+| [remove](https://livr-spec.org/validation-rules/remove.html) | `{ remove => '-() ' }` | Removes the given characters from the string |
+| [leave_only](https://livr-spec.org/validation-rules/leave_only.html) | `{ leave_only => '0123456789' }` | Removes all characters except the given ones |
+| [default](https://livr-spec.org/validation-rules/default.html) | `{ default => 'en' }` | Sets the value if it is empty |
+
 ### The "like" rule
 
 The "like" rule accepts a regex string in the common syntax (JavaScript, Perl, PCRE), as the specification requires,
