@@ -1,6 +1,8 @@
 Revision history for LIVR
 
 {{$NEXT}}
+    - README lists all supported rules with links to the specification
+    - README mentions that LIVR has no dependencies, fixed typos, updated the copyright years
 
 2.2.0  2026-10-19T12:47:41+03:00
     - Released to the Zef ecosystem, the auth is zef:koorchik now. Earlier versions are on CPAN
