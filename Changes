@@ -1,6 +1,8 @@
 Revision history for LIVR
 
 {{$NEXT}}
+
+2.2.0  2026-10-19T12:47:41+03:00
     - Released to the Zef ecosystem, the auth is zef:koorchik now. Earlier versions are on CPAN
       with the auth cpan:KOORCHIK.
     - Module files have the .rakumod extension instead of .pm6
