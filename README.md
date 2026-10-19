@@ -111,6 +111,7 @@ Features:
 * Returns understandable error codes(not error messages)
 * Easy to add own rules
 * Multipurpose (user input validation, configs validation, contracts programming etc)
+* Zero dependencies (JSON::Tiny is needed only to run the tests)
 
 ### The "like" rule
 
