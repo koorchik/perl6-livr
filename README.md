@@ -328,7 +328,7 @@ See https://github.com/koorchik/perl6-livr
 
 ## LICENSE AND COPYRIGHT
 
-Copyright 2017 Viktor Turskyi.
+Copyright 2015-2026 Viktor Turskyi.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the the Artistic License (2.0). You may obtain a
