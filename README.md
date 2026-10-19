@@ -104,11 +104,11 @@ Features:
 
 * Rules are declarative and language independent
 * Any number of rules for each field
-* Return together errors for all fields
+* Returns errors for all fields together
 * Excludes all fields that do not have validation rules described
-* Has possibility to validatate complex hierarchical structures
-* Easy to describe and undersand rules
-* Returns understandable error codes(not error messages)
+* Has possibility to validate complex hierarchical structures
+* Easy to describe and understand rules
+* Returns understandable error codes (not error messages)
 * Easy to add own rules
 * Multipurpose (user input validation, configs validation, contracts programming etc)
 * Zero dependencies (JSON::Tiny is needed only to run the tests)
