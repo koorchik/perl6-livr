@@ -2,11 +2,11 @@
 
 # LIVR::Validator
 
-Lightweight and powerfull Perl6 validator supporting Language Independent Validation Rules Specification (LIVR)
+Lightweight and powerful Raku validator supporting Language Independent Validation Rules Specification (LIVR)
 
 ## SYNOPSIS
 
-```perl6
+```raku
 ### Common usage
 use LIVR;
 
@@ -117,7 +117,7 @@ Features:
 The "like" rule accepts a regex string in the common syntax (JavaScript, Perl, PCRE), as the specification requires,
 or a native Raku regex:
 
-```perl6
+```raku
 my $validator = LIVR::Validator.new(livr-rules => {
     name  => { like => '^[a-z]+$' },
     code  => { like => ['^[a-z]{2}\d+$', 'i'] }, # with flags. Only "i" is supported
@@ -143,7 +143,7 @@ if $IS-AUTO-TRIM is undef then default-auto-trim value will be used.
 
 $ALIAS - is a hash that contains: name, rules, error (optional).
 
-```perl6
+```raku
 LIVR::Validator.register-aliased-default-rule({
     name  => 'valid_address',
     rules => { nested_object => {
@@ -156,7 +156,7 @@ LIVR::Validator.register-aliased-default-rule({
 
 Then you can use "valid\_address" for validation:
 
-```perl6
+```raku
 {
     address => 'valid_address'
 }
@@ -165,7 +165,7 @@ Then you can use "valid\_address" for validation:
 
 You can register aliases with own errors:
 
-```perl6
+```raku
 LIVR::Validator.register-aliased-default-rule({
     name  => 'adult_age'
     rules => [ 'positive_integer', { min_number => 18 } ],
@@ -180,7 +180,7 @@ All rules/aliases for the validator are equal. The validator does not distinguis
 
 &RULE_BUILDER - is a subroutine reference which will be called for building single value validator.
 
-```perl6
+```raku
 LIVR::Validator.register-default-rules( my_rule => sub (@rule-args, %builders) {
     # %builders - are rules from original validator
     # to allow you create new validator with all supported rules
@@ -204,7 +204,7 @@ LIVR::Validator.register-default-rules( my_rule => sub (@rule-args, %builders) {
 
 Then you can use "my_rule" for validation:
 
-```perl6
+```raku
 {
     name1 => 'my_rule' # Call without parameters
     name2 => { 'my_rule' => $arg1 } # Call with one parameter.
@@ -215,7 +215,7 @@ Then you can use "my_rule" for validation:
 
 Here is "max_number" implementation:
 
-```perl6
+```raku
 sub max-number([Numeric $max-number], %builders) {
     return sub ($value, %all-values, $output is rw) {
         return if LIVR::Util::is-no-value($value);
@@ -262,7 +262,7 @@ Enables or disables automatic trim for input data. If is on then every new valid
 
 Validates user input. On success returns $VALID-DATA (contains only data that has described validation rules). On error return false.
 
-```perl6
+```raku
 my $VALID-DATA = $VALIDATOR.validate(%INPUT)
 
 if ($VALID-DATA) {
@@ -276,7 +276,7 @@ if ($VALID-DATA) {
 
 Returns errors hash.
 
-```perl6
+```raku
 {
     "field1" => "ERROR_CODE",
     "field2" => "ERROR_CODE",
@@ -286,7 +286,7 @@ Returns errors hash.
 
 For example:
 
-```perl6
+```raku
 {
     "country"  => "NOT_ALLOWED_VALUE",
     "zip"      => "NOT_POSITIVE_INTEGER",
@@ -319,7 +319,7 @@ Viktor Turskyi, @koorchik
 
 Please report any bugs or feature requests to Github 
 
-* Perl6 specific issues https://github.com/koorchik/perl6-livr/issues
+* Raku specific issues https://github.com/koorchik/perl6-livr/issues
 * The spec specific issues https://github.com/koorchik/livr/issues
 
 ## SUPPORT
