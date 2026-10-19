@@ -1,6 +1,8 @@
 Revision history for LIVR
 
 {{$NEXT}}
+
+2.2.1  2026-10-19T14:07:42+03:00
     - README lists all supported rules with links to the specification
     - README mentions that LIVR has no dependencies, fixed typos, updated the copyright years
 
