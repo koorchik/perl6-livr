@@ -115,7 +115,7 @@ Features:
 
 ### Supported rules
 
-All rules of the LIVR specification are supported, and the rules of the LIVR 2.5 draft (marked "2.5").
+All rules of the LIVR specification are supported, and the rules added in LIVR 2.5 (marked "2.5").
 Every rule name links to its page in the specification, with live examples and the full list of error codes.
 
 Rules other than `required`, `not_empty`, `not_empty_list`, `default`, `required_if`, `when` and `any`

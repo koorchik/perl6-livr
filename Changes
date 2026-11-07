@@ -1,12 +1,12 @@
 Revision history for LIVR
 
 {{$NEXT}}
-    - The rules of the LIVR 2.5 draft: boolean, any, required_if, not_one_of, digits,
+    - The rules of LIVR 2.5: boolean, any, required_if, not_one_of, digits,
       starts_with, ends_with, contains, max_decimals, iso_datetime, iso_time, bounds for
       iso_date ({ iso_date => { max => 'today' } }), split, when, values, keys, list_length,
       unique, uuid, ip, cidr, hostname, base64, hex, digest, mongo_id, hex_color, mac, e164,
-      semver, jwt, luhn, credit_card and iban. The specification is a draft, so these rules can
-      still change. They die on wrong arguments, { boolean => Any } (null) included
+      semver, jwt, luhn, credit_card and iban. They die on wrong arguments,
+      { boolean => Any } (null) included
     - The bounds "today", "yesterday" and "tomorrow" use the system clock in UTC. Tests fix it
       by wrapping "time", see README
     - The LIVR 2.0 rules ignore extra arguments instead of dying: { required => 1 },
