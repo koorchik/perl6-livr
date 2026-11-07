@@ -1,6 +1,27 @@
 Revision history for LIVR
 
 {{$NEXT}}
+    - The rules of the LIVR 2.5 draft: boolean, any, required_if, not_one_of, digits,
+      starts_with, ends_with, contains, max_decimals, iso_datetime, iso_time, bounds for
+      iso_date ({ iso_date => { max => 'today' } }), split, when, values, keys, list_length,
+      unique, uuid, ip, cidr, hostname, base64, hex, digest, mongo_id, hex_color, mac, e164,
+      semver, jwt, luhn, credit_card and iban. The specification is a draft, so these rules can
+      still change. They die on wrong arguments, { boolean => Any } (null) included
+    - The bounds "today", "yesterday" and "tomorrow" use the system clock in UTC. Tests fix it
+      by wrapping "time", see README
+    - The LIVR 2.0 rules ignore extra arguments instead of dying: { required => 1 },
+      { max_length => [5, 1] }
+    - "iso_date" dies when its first argument is not an options object: { iso_date => 'today' }
+      checked nothing in LIVR 2.0. { iso_date => Any } (null) is the plain iso_date
+    - "eq" and "one_of" compare booleans as strings: { eq => True } accepts True and "true",
+      and still "True" as in LIVR 2.0
+    - { default => Any } builds: it sets an empty value to Any
+    - Aliases and "or" are transparent: their rules see the other fields of the object, so
+      "equal_to_field" works in them. In "list_of" the other field is missing
+    - Faster validator construction: nested validators of meta rules and aliases share the rules
+      of their validator instead of copying them, "or" builds one validator for all rule sets.
+      The format, checksum, list and date rules are loaded on first use
+    - Updated the LIVR 2.0 test suite, added the LIVR 2.5 test suite
 
 2.2.1  2026-10-19T14:07:42+03:00
     - README lists all supported rules with links to the specification
