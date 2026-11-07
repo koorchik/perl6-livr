@@ -115,10 +115,10 @@ Features:
 
 ### Supported rules
 
-All rules of the LIVR specification are supported. Every rule name links to its page in the specification,
-with live examples and the full list of error codes.
+All rules of the LIVR specification are supported, and the rules of the LIVR 2.5 draft (marked "2.5").
+Every rule name links to its page in the specification, with live examples and the full list of error codes.
 
-Rules other than `required`, `not_empty`, `not_empty_list` and `default`
+Rules other than `required`, `not_empty`, `not_empty_list`, `default`, `required_if`, `when` and `any`
 [skip empty values](https://livr-spec.org/validation-rules.html#empty-values-are-skipped) (missing, undefined
 or an empty string), so add `required` to the rules of mandatory fields.
 
@@ -130,6 +130,9 @@ or an empty string), so add `required` to the rules of mandatory fields.
 | [not_empty](https://livr-spec.org/validation-rules/not_empty.html) | `'not_empty'` | The value is not an empty string, if the field is passed |
 | [not_empty_list](https://livr-spec.org/validation-rules/not_empty_list.html) | `'not_empty_list'` | The value is a list with at least one element |
 | [any_object](https://livr-spec.org/validation-rules/any_object.html) | `'any_object'` | The value is a hash. Its content is not validated |
+| [required_if](https://livr-spec.org/validation-rules/required_if.html) | `{ required_if => { type => 'company' } }` | 2.5. The value is required when other fields have the given values |
+| [any](https://livr-spec.org/validation-rules/any.html) | `'any'` | 2.5. Any value passes and is kept as it is, including hashes and lists |
+| [boolean](https://livr-spec.org/validation-rules/boolean.html) | `'boolean'` | 2.5. `True`, `False`, `1`, `0`, `'1'`, `'0'`, `'true'` or `'false'`, converted to a `Bool` |
 
 [String rules](https://livr-spec.org/validation-rules/string-rules.html)
 
@@ -143,6 +146,11 @@ or an empty string), so add `required` to the rules of mandatory fields.
 | [length_between](https://livr-spec.org/validation-rules/length_between.html) | `{ length_between => [3, 10] }` | The string length is between the two values, inclusive |
 | [length_equal](https://livr-spec.org/validation-rules/length_equal.html) | `{ length_equal => 5 }` | The string is exactly the given number of characters long |
 | [like](https://livr-spec.org/validation-rules/like.html) | `{ like => '^[a-z]+$' }` | The value matches a regex, see [the "like" rule](#the-like-rule) |
+| [not_one_of](https://livr-spec.org/validation-rules/not_one_of.html) | `{ not_one_of => ['admin', 'root'] }` | 2.5. The value is none of the forbidden values |
+| [digits](https://livr-spec.org/validation-rules/digits.html) | `'digits'` | 2.5. The value has only the digits 0-9, the leading zeros are kept |
+| [starts_with](https://livr-spec.org/validation-rules/starts_with.html) | `{ starts_with => ['https://', 'http://'] }` | 2.5. The string starts with one of the given strings |
+| [ends_with](https://livr-spec.org/validation-rules/ends_with.html) | `{ ends_with => '.pdf' }` | 2.5. The string ends with one of the given strings |
+| [contains](https://livr-spec.org/validation-rules/contains.html) | `{ contains => '@' }` | 2.5. The string contains one of the given strings |
 
 [Numeric rules](https://livr-spec.org/validation-rules/numeric-rules.html)
 
@@ -155,6 +163,7 @@ or an empty string), so add `required` to the rules of mandatory fields.
 | [max_number](https://livr-spec.org/validation-rules/max_number.html) | `{ max_number => 100 }` | The number is not greater than the given value |
 | [min_number](https://livr-spec.org/validation-rules/min_number.html) | `{ min_number => 1 }` | The number is not less than the given value |
 | [number_between](https://livr-spec.org/validation-rules/number_between.html) | `{ number_between => [1, 100] }` | The number is between the two values, inclusive |
+| [max_decimals](https://livr-spec.org/validation-rules/max_decimals.html) | `{ max_decimals => 2 }` | 2.5. The number has at most the given number of digits after the decimal point |
 
 [Special rules](https://livr-spec.org/validation-rules/special-rules.html)
 
@@ -162,7 +171,9 @@ or an empty string), so add `required` to the rules of mandatory fields.
 |------|---------|-------------|
 | [email](https://livr-spec.org/validation-rules/email.html) | `'email'` | The value is an email address |
 | [url](https://livr-spec.org/validation-rules/url.html) | `'url'` | The value is an http or https URL |
-| [iso_date](https://livr-spec.org/validation-rules/iso_date.html) | `'iso_date'` | The value is an ISO 8601 date without time, like `2014-08-14` |
+| [iso_date](https://livr-spec.org/validation-rules/iso_date.html) | `'iso_date'`, `{ iso_date => { max => 'today' } }` | The value is an ISO 8601 date without time, like `2014-08-14`. The bounds are 2.5 |
+| [iso_datetime](https://livr-spec.org/validation-rules/iso_datetime.html) | `{ iso_datetime => { min => 'today' } }` | 2.5. A date and a time with an offset, converted to UTC: `2026-10-29T08:00:00.123Z` |
+| [iso_time](https://livr-spec.org/validation-rules/iso_time.html) | `{ iso_time => { min => '09:00', max => '18:00' } }` | 2.5. A time of day, like `09:30` or `09:30:15.5` |
 | [equal_to_field](https://livr-spec.org/validation-rules/equal_to_field.html) | `{ equal_to_field => 'password' }` | The value is equal to the value of another field |
 
 [Metarules](https://livr-spec.org/validation-rules/metarules.html)
@@ -175,6 +186,42 @@ or an empty string), so add `required` to the rules of mandatory fields.
 | [list_of_objects](https://livr-spec.org/validation-rules/list_of_objects.html) | `{ list_of_objects => { id => 'required' } }` | Validates every hash in a list with the given rules |
 | [list_of_different_objects](https://livr-spec.org/validation-rules/list_of_different_objects.html) | `{ list_of_different_objects => ['type', { book => {...}, dvd => {...} }] }` | Validates every hash in a list with the rules chosen by its selector field |
 | [or](https://livr-spec.org/validation-rules/or.html) | `{ or => ['email', 'positive_integer'] }` | Passes if any of the rule sets passes (experimental) |
+| [when](https://livr-spec.org/validation-rules/when.html) | `{ when => ['type', { eq => 'company' }, 'required'] }` | 2.5. Chooses the rules by the value of another field |
+| [values](https://livr-spec.org/validation-rules/values.html) | `{ values => ['required', 'positive_integer'] }` | 2.5. Validates every value of a hash with the given rules |
+| [keys](https://livr-spec.org/validation-rules/keys.html) | `{ keys => { one_of => ['uk', 'en'] } }` | 2.5. Validates every key of a hash with the given rules |
+
+[List rules](https://livr-spec.org/validation-rules/list-rules.html) (2.5)
+
+| Rule | Example | Description |
+|------|---------|-------------|
+| [list_length](https://livr-spec.org/validation-rules/list_length.html) | `{ list_length => [1, 10] }` | The list has the given number of items |
+| [unique](https://livr-spec.org/validation-rules/unique.html) | `'unique'`, `{ unique => 'id' }` | The items, or the given keys of the hashes in the list, are unique |
+
+[Format rules](https://livr-spec.org/validation-rules/format-rules.html) (2.5)
+
+| Rule | Example | Description |
+|------|---------|-------------|
+| [uuid](https://livr-spec.org/validation-rules/uuid.html) | `'uuid'`, `{ uuid => 'v4' }` | A UUID (RFC 9562) |
+| [ip](https://livr-spec.org/validation-rules/ip.html) | `'ip'`, `{ ip => 'v4' }` | An IPv4 or IPv6 address |
+| [cidr](https://livr-spec.org/validation-rules/cidr.html) | `'cidr'`, `{ cidr => 'v6' }` | An IP address with a prefix length, like `10.0.0.0/8` |
+| [hostname](https://livr-spec.org/validation-rules/hostname.html) | `'hostname'` | A host name (RFC 1123) |
+| [base64](https://livr-spec.org/validation-rules/base64.html) | `'base64'`, `{ base64 => 'url' }` | Base64, standard or URL-safe (RFC 4648) |
+| [hex](https://livr-spec.org/validation-rules/hex.html) | `'hex'` | Hex digits |
+| [digest](https://livr-spec.org/validation-rules/digest.html) | `{ digest => 'sha256' }` | A hex digest of MD5, SHA-1 or SHA-2 |
+| [mongo_id](https://livr-spec.org/validation-rules/mongo_id.html) | `'mongo_id'` | A MongoDB ObjectId |
+| [hex_color](https://livr-spec.org/validation-rules/hex_color.html) | `'hex_color'` | A color like `#fff` or `#00ff00` |
+| [mac](https://livr-spec.org/validation-rules/mac.html) | `'mac'`, `{ mac => 64 }` | A MAC address (EUI-48 or EUI-64) |
+| [e164](https://livr-spec.org/validation-rules/e164.html) | `'e164'` | A phone number in the E.164 format, like `+15555550100` |
+| [semver](https://livr-spec.org/validation-rules/semver.html) | `'semver'` | A version of Semantic Versioning 2.0.0 |
+| [jwt](https://livr-spec.org/validation-rules/jwt.html) | `'jwt'` | The structure of a JSON Web Token. It is not decoded or verified |
+
+[Checksum rules](https://livr-spec.org/validation-rules/checksum-rules.html) (2.5)
+
+| Rule | Example | Description |
+|------|---------|-------------|
+| [luhn](https://livr-spec.org/validation-rules/luhn.html) | `'luhn'` | Digits with a valid Luhn checksum |
+| [credit_card](https://livr-spec.org/validation-rules/credit_card.html) | `'credit_card'` | A payment card number: 12-19 digits with a valid Luhn checksum |
+| [iban](https://livr-spec.org/validation-rules/iban.html) | `'iban'` | An IBAN with a valid checksum |
 
 [Modifiers](https://livr-spec.org/validation-rules/modifiers.html)
 
@@ -186,6 +233,7 @@ or an empty string), so add `required` to the rules of mandatory fields.
 | [remove](https://livr-spec.org/validation-rules/remove.html) | `{ remove => '-() ' }` | Removes the given characters from the string |
 | [leave_only](https://livr-spec.org/validation-rules/leave_only.html) | `{ leave_only => '0123456789' }` | Removes all characters except the given ones |
 | [default](https://livr-spec.org/validation-rules/default.html) | `{ default => 'en' }` | Sets the value if it is empty |
+| [split](https://livr-spec.org/validation-rules/split.html) | `{ split => ',' }` | 2.5. Splits a string into a list at the separator |
 
 ### The "like" rule
 
@@ -213,6 +261,16 @@ $LIVR - validations rules. Rules description is available here - ['LIVR Specific
 
 $IS-AUTO-TRIM - asks validator to trim all values before validation. Output will be also trimmed.
 if $IS-AUTO-TRIM is undef then default-auto-trim value will be used.
+
+The bounds `today`, `yesterday` and `tomorrow` of `iso_date` and `iso_datetime` (LIVR 2.5) are the
+current date in UTC, read from the system clock with `time` on every check. To fix the date in tests,
+wrap `time`:
+
+```raku
+my $handle = &term:<time>.wrap({ DateTime.new('2026-10-18T12:00:00Z').posix });
+# ... validate ...
+$handle.restore;
+```
 
 ### LIVR::Validator.register-aliased-default-rule( $ALIAS )
 

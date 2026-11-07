@@ -8,6 +8,21 @@ use LIVR::Rules::Special;
 use LIVR::Rules::Modifiers;
 use LIVR::Rules::Meta;
 
+# Rules of LIVR 2.5 in modules that are loaded on first use: a schema uses few of them, and
+# loading them all would make "use LIVR" slower
+sub lazy-rule(Str $module, Str $name) {
+    my $rule-builder;
+
+    return sub (@args, %builders) {
+        $rule-builder //= do {
+            require ::($module);
+            ::("&{$module}::{$name}");
+        };
+
+        return $rule-builder(@args, %builders);
+    };
+}
+
 my %DEFAULT_RULES = (
     required         => &LIVR::Rules::Common::required,
     not_empty        => &LIVR::Rules::Common::not_empty,
@@ -49,6 +64,49 @@ my %DEFAULT_RULES = (
     list_of          => &LIVR::Rules::Meta::list_of,
     list_of_objects  => &LIVR::Rules::Meta::list_of_objects,
     list_of_different_objects  => &LIVR::Rules::Meta::list_of_different_objects,
+
+    # LIVR 2.5
+    boolean          => &LIVR::Rules::Common::boolean,
+    any              => &LIVR::Rules::Common::livr_any,
+    required_if      => &LIVR::Rules::Common::required_if,
+
+    not_one_of       => &LIVR::Rules::String::not_one_of,
+    digits           => &LIVR::Rules::String::digits,
+    starts_with      => &LIVR::Rules::String::starts_with,
+    ends_with        => &LIVR::Rules::String::ends_with,
+    contains         => &LIVR::Rules::String::contains,
+
+    max_decimals     => &LIVR::Rules::Numeric::max_decimals,
+
+    iso_datetime     => lazy-rule('LIVR::Rules::Dates', 'iso_datetime'),
+    iso_time         => lazy-rule('LIVR::Rules::Dates', 'iso_time'),
+
+    split            => &LIVR::Rules::Modifiers::livr_split,
+
+    when             => &LIVR::Rules::Meta::livr_when,
+    values           => &LIVR::Rules::Meta::livr_values,
+    keys             => &LIVR::Rules::Meta::livr_keys,
+
+    list_length      => lazy-rule('LIVR::Rules::List', 'list_length'),
+    unique           => lazy-rule('LIVR::Rules::List', 'livr_unique'),
+
+    uuid             => lazy-rule('LIVR::Rules::Format', 'uuid'),
+    ip               => lazy-rule('LIVR::Rules::Format', 'ip'),
+    cidr             => lazy-rule('LIVR::Rules::Format', 'cidr'),
+    hostname         => lazy-rule('LIVR::Rules::Format', 'hostname'),
+    base64           => lazy-rule('LIVR::Rules::Format', 'base64'),
+    hex              => lazy-rule('LIVR::Rules::Format', 'hex'),
+    digest           => lazy-rule('LIVR::Rules::Format', 'digest'),
+    mongo_id         => lazy-rule('LIVR::Rules::Format', 'mongo_id'),
+    hex_color        => lazy-rule('LIVR::Rules::Format', 'hex_color'),
+    mac              => lazy-rule('LIVR::Rules::Format', 'mac'),
+    e164             => lazy-rule('LIVR::Rules::Format', 'e164'),
+    semver           => lazy-rule('LIVR::Rules::Format', 'semver'),
+    jwt              => lazy-rule('LIVR::Rules::Format', 'jwt'),
+
+    luhn             => lazy-rule('LIVR::Rules::Checksum', 'luhn'),
+    credit_card      => lazy-rule('LIVR::Rules::Checksum', 'credit_card'),
+    iban             => lazy-rule('LIVR::Rules::Checksum', 'iban'),
 );
 
 LIVR::Validator.register-default-rules(%DEFAULT_RULES);

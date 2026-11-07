@@ -1,7 +1,9 @@
 unit module LIVR::Rules::Modifiers;
-use LIVR::Utils;
+use LIVR::Utils :DEFAULT, :internal;
 
-our sub trim([], %builders) {
+# The LIVR 2.0 rules ignore extra arguments
+
+our sub trim(@, %builders) {
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
         
@@ -10,7 +12,7 @@ our sub trim([], %builders) {
     };
 }
 
-our sub to_lc([], %builders) {
+our sub to_lc(@, %builders) {
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
         
@@ -19,7 +21,7 @@ our sub to_lc([], %builders) {
     };
 }
 
-our sub to_uc([], %builders) {
+our sub to_uc(@, %builders) {
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
         
@@ -28,7 +30,7 @@ our sub to_uc([], %builders) {
     };
 }
 
-our sub remove([Str $chars], %builders) {
+our sub remove([Str $chars, *@], %builders) {
     return sub ($value, %all-values, $output is rw) {
         return if is-no-value($value) || ($value !~~ Str && $value !~~ Numeric);
         
@@ -37,7 +39,7 @@ our sub remove([Str $chars], %builders) {
     };
 }
 
-our sub leave_only([Str $chars], %builders) {
+our sub leave_only([Str $chars, *@], %builders) {
     my $chars-set = set($chars.comb);
 
     return sub ($value, %all-values, $output is rw) {
@@ -52,13 +54,37 @@ our sub leave_only([Str $chars], %builders) {
     };
 }
 
-our sub default([Cool $default-value], %builders) {
+# { default => Any } (null) sets null, as in the specification: an empty value becomes null, a
+# missing field stays missing
+our sub default([$default-value where Cool | Any:U, *@], %builders) {
     return sub ($value, %all-values, $output is rw) {
         
         if is-no-value($value) {
             $output = $default-value;
         }
         
+        return;
+    };
+}
+
+# LIVR 2.5
+
+our sub livr_split(@args, %builders) {
+    my $separator = string-argument(@args[0]);
+    die "LIVR: rule [split] takes a non-empty separator string\n" unless $separator.defined && $separator ne '';
+
+    # A modifier: lists, empty values and objects stay as they are, the next rule reports them
+    return sub ($value, %all-values, $output is rw) {
+        return unless $value.defined;
+
+        # At every separator, not a regex. Empty parts are kept: "a,,b" is ["a", "", "b"]. A
+        # number or a boolean is split in its string form: true is ["true"]
+        if $value ~~ Str {
+            $output = [$value.split($separator)] if $value ne '';
+        } elsif $value ~~ Real {
+            $output = [string-form($value).split($separator)];
+        }
+
         return;
     };
 }

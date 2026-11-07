@@ -14,7 +14,11 @@
   "provides": {
     "LIVR": "lib/LIVR.rakumod",
     "LIVR::Regex": "lib/LIVR/Regex.rakumod",
+    "LIVR::Rules::Checksum": "lib/LIVR/Rules/Checksum.rakumod",
     "LIVR::Rules::Common": "lib/LIVR/Rules/Common.rakumod",
+    "LIVR::Rules::Dates": "lib/LIVR/Rules/Dates.rakumod",
+    "LIVR::Rules::Format": "lib/LIVR/Rules/Format.rakumod",
+    "LIVR::Rules::List": "lib/LIVR/Rules/List.rakumod",
     "LIVR::Rules::Meta": "lib/LIVR/Rules/Meta.rakumod",
     "LIVR::Rules::Modifiers": "lib/LIVR/Rules/Modifiers.rakumod",
     "LIVR::Rules::Numeric": "lib/LIVR/Rules/Numeric.rakumod",
