@@ -1,6 +1,8 @@
 Revision history for LIVR
 
 {{$NEXT}}
+
+2.3.0  2026-11-07T23:48:56+02:00
     - The rules of LIVR 2.5: boolean, any, required_if, not_one_of, digits,
       starts_with, ends_with, contains, max_decimals, iso_datetime, iso_time, bounds for
       iso_date ({ iso_date => { max => 'today' } }), split, when, values, keys, list_length,
