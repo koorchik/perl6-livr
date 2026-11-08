@@ -41,14 +41,22 @@ our sub url(@, %builders) {
     my $url-re = rx/^
         'http' 's'? '://'
         [
-            # A host name. Its labels do not start or end with "-", the last one starts with a letter
-            [ <[a..zA..Z0..9]> [ <[\-a..zA..Z0..9]>* <[a..zA..Z0..9]> ]? '.' ]*
-            <[a..zA..Z]> [ <[\-a..zA..Z0..9]>* <[a..zA..Z0..9]> ]? '.'?
+            # A host name. Its labels have up to 63 characters and do not start or end with "-",
+            # the last one starts with a letter. No dot after the host (LIVR 2.5)
+            [ <[a..zA..Z0..9]> [ <[\-a..zA..Z0..9]> ** 0..61 <[a..zA..Z0..9]> ]? '.' ]*
+            <[a..zA..Z]> [ <[\-a..zA..Z0..9]> ** 0..61 <[a..zA..Z0..9]> ]?
 
             # Or an IPv4 address
             || <[0..9]>+ '.' <[0..9]>+ '.' <[0..9]>+ '.' <[0..9]>+
         ]
-        [ ':' <[0..9]>* ]?
+        # A port from 0 to 65535 with 1-5 digits (LIVR 2.5)
+        [
+            ':'
+            [
+                <[0..9]> ** 1..4 || <[0..5]> <[0..9]> ** 4 || '6' <[0..4]> <[0..9]> ** 3
+                || '65' <[0..4]> <[0..9]> ** 2 || '655' <[0..2]> <[0..9]> || '6553' <[0..5]>
+            ]
+        ]?
         [
             # The path and the query, with %-escaped characters
             '/' <[a..zA..Z0..9\-_.!~*'():@&=+$,;/]>* [ '%' <[a..fA..F0..9]> ** 2 <[a..zA..Z0..9\-_.!~*'():@&=+$,;/]>* ]*

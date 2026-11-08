@@ -2,6 +2,13 @@ Revision history for LIVR
 
 {{$NEXT}}
 
+2.3.1  2026-11-08T16:16:23+02:00
+    - "url" checks the host and the port as LIVR 2.5 specifies now: it rejects a dot after the
+      host, such as "https://www.google." or "http://example.com./path", host labels longer
+      than 63 characters, ports above 65535 or of more than 5 digits, and a ":" without a
+      port. Hosts without a dot, such as "localhost", and IPv4 addresses pass as before
+    - Updated the LIVR 2.5 test suite, with the new "url" cases
+
 2.3.0  2026-11-07T23:48:56+02:00
     - The rules of LIVR 2.5: boolean, any, required_if, not_one_of, digits,
       starts_with, ends_with, contains, max_decimals, iso_datetime, iso_time, bounds for
